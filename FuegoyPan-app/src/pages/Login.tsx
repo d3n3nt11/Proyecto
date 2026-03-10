@@ -1,6 +1,6 @@
 import logo from '../assets/logo.png'
 
-export default function Inicio() {
+export default function Login() {
     return (
         <div className='min-h-screen flex flex-col items-center justify-center bg-[url(https://images.pexels.com/photos/2983101/pexels-photo-2983101.jpeg?cs=srgb&dl=pexels-jonathan-borba-2983101.jpg&fm=jpg)] bg-cover bg-center'>
             <div className='mb-8'>

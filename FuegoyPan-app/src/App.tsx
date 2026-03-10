@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router"
 import Home from './pages/Home'
 import Burger from "./pages/Burger"
-import Inicio from "./pages/Inicio"
+import Inicio from "./pages/Login"
 
 function App() {
 
