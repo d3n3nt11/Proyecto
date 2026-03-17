@@ -38,6 +38,10 @@ public class User implements UserDetails {
     @Column(name = "profile_photo")
     private String profilePhoto;
 
+    //relación con ventas
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Sale> sales;
+
     // Spring Security
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

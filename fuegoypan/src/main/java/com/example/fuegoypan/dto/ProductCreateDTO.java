@@ -1,0 +1,13 @@
+package com.example.fuegoypan.dto;
+
+import lombok.Data;
+
+@Data
+public class ProductCreateDTO {
+
+    private String name;
+    private Double price;
+    private String description;
+    private Boolean visible;
+
+}

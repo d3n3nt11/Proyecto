@@ -41,6 +41,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/products/**").hasAnyRole("ADMIN","GERENTE")
+                        .requestMatchers("/api/ingredients/**").hasAnyRole("ADMIN","GERENTE")
+                        .requestMatchers("/api/recipes/**").hasAnyRole("ADMIN","GERENTE")
+                        .requestMatchers("/api/sales/**").authenticated()
+                        .requestMatchers("/api/stock/**").hasAnyRole("ADMIN","GERENTE")
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
