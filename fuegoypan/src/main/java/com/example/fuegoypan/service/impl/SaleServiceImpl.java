@@ -39,11 +39,11 @@ public class SaleServiceImpl implements SaleService {
         User user = userRepo.findById(dto.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
-        Sale sale = Sale.builder()
-                .user(user)
-                .status(dto.getStatus())
-                .lines(new ArrayList<>())
-                .build();
+        // Crear la venta sin builder
+        Sale sale = new Sale();
+        sale.setUser(user);
+        sale.setStatus(dto.getStatus());
+        sale.setLines(new ArrayList<>());
 
         List<SaleLine> lines = new ArrayList<>();
 
@@ -52,12 +52,12 @@ public class SaleServiceImpl implements SaleService {
             Product product = productRepo.findById(lineDTO.getProductId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
 
-            SaleLine line = SaleLine.builder()
-                    .sale(sale)
-                    .product(product)
-                    .quantity(lineDTO.getQuantity())
-                    .unitPrice(product.getPrice())
-                    .build();
+            // Crear línea sin builder
+            SaleLine line = new SaleLine();
+            line.setSale(sale);
+            line.setProduct(product);
+            line.setQuantity(lineDTO.getQuantity());
+            line.setUnitPrice(product.getPrice());
 
             // Descontar stock de ingredientes según receta
             if (product.getRecipeItems() != null) {

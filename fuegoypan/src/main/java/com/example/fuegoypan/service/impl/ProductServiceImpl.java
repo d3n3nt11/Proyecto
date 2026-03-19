@@ -24,12 +24,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO createProduct(ProductCreateDTO dto) {
-        Product product = Product.builder()
-                .name(dto.getName())
-                .price(dto.getPrice())
-                .description(dto.getDescription())
-                .visible(dto.getVisible())
-                .build();
+        Product product = new Product();
+        product.setName(dto.getName());
+        product.setPrice(dto.getPrice());
+        product.setDescription(dto.getDescription());
+        product.setVisible(dto.getVisible());
 
         Product saved = productRepo.save(product);
         return mapToDTO(saved);

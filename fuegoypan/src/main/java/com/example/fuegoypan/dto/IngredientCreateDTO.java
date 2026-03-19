@@ -2,10 +2,32 @@ package com.example.fuegoypan.dto;
 
 import lombok.Data;
 
-@Data
 public class IngredientCreateDTO {
 
     private String name;
     private String unit;
 
+    public IngredientCreateDTO() {
+    }
+
+    public IngredientCreateDTO(String unit, String name) {
+        this.unit = unit;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 }

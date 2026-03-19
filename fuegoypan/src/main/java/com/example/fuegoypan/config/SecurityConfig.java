@@ -1,7 +1,6 @@
 package com.example.fuegoypan.config;
 
 
-import com.example.fuegoypan.security.CustomUserDetailsService;
 import com.example.fuegoypan.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +27,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService,
-                          JwtAuthenticationFilter jwtAuthFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
@@ -40,13 +38,6 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")
-                        .requestMatchers("/api/products/**").hasAnyRole("ADMIN","GERENTE")
-                        .requestMatchers("/api/ingredients/**").hasAnyRole("ADMIN","GERENTE")
-                        .requestMatchers("/api/recipes/**").hasAnyRole("ADMIN","GERENTE")
-                        .requestMatchers("/api/sales/**").authenticated()
-                        .requestMatchers("/api/stock/**").hasAnyRole("ADMIN","GERENTE")
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )

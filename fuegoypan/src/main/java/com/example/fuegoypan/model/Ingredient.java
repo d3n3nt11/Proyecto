@@ -5,12 +5,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "ingredients")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-
 public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,4 +17,44 @@ public class Ingredient {
     @OneToOne(mappedBy = "ingredient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private StockIngredient stock;
 
+    public Ingredient(Long id, String name, String unit, StockIngredient stock) {
+        this.id = id;
+        this.name = name;
+        this.unit = unit;
+        this.stock = stock;
+    }
+    public Ingredient() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public StockIngredient getStock() {
+        return stock;
+    }
+
+    public void setStock(StockIngredient stock) {
+        this.stock = stock;
+    }
 }

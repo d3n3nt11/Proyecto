@@ -24,10 +24,9 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public IngredientDTO createIngredient(IngredientCreateDTO dto) {
-        Ingredient ingredient = Ingredient.builder()
-                .name(dto.getName())
-                .unit(dto.getUnit())
-                .build();
+        Ingredient ingredient = new Ingredient();
+        ingredient.setName(dto.getName());
+        ingredient.setUnit(dto.getUnit());
 
         Ingredient saved = ingredientRepo.save(ingredient);
         return mapToDTO(saved);

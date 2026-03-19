@@ -28,12 +28,14 @@ public class UserController {
     }
 
     //Obtener todos los usuarios
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<UserDTO> getAll() {
         return userService.getAll();
     }
 
     //Obtener por usuarios por ID
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @GetMapping("/{id}")
     public UserDTO getById(@PathVariable Long id) {
         return userService.getById(id);
@@ -46,6 +48,7 @@ public class UserController {
     }
 
     //activar usaurio
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/activate")
     public void activateUser(@PathVariable Long id) {
         userService.activateUser(id);

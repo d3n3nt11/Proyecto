@@ -5,11 +5,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "recipe")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Recipe {
     @EmbeddedId
     private RecipeId id;
@@ -27,4 +22,45 @@ public class Recipe {
     @Column(nullable = false)
     private Double quantity;
 
+    public Recipe() {
+    }
+
+    public Recipe(Product product, Ingredient ingredient, Double quantity) {
+        this.product = product;
+        this.ingredient = ingredient;
+        this.quantity = quantity;
+        this.id = new RecipeId(product.getId(), ingredient.getId());
+    }
+
+    public RecipeId getId() {
+        return id;
+    }
+
+    public void setId(RecipeId id) {
+        this.id = id;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Ingredient getIngredient() {
+        return ingredient;
+    }
+
+    public void setIngredient(Ingredient ingredient) {
+        this.ingredient = ingredient;
+    }
+
+    public Double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
+    }
 }
