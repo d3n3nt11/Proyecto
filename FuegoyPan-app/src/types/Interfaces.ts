@@ -24,3 +24,13 @@
     role: string;
     profilePhoto?: string;
     }
+
+    // Datos de un producto
+    export interface IProducto {
+        id: number;
+        name: string;
+        description: string;
+        price: number;
+        category: "comida" | "bebida" | "postre" | "salsa";
+        imageUrl?: string;
+    }

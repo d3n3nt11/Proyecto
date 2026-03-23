@@ -1,3 +1,4 @@
+import type { IProducto } from "../types/Interfaces";
 
 const BASE_URL = "http://localhost:8081/api";
 
@@ -38,10 +39,35 @@ export function login(data: { name: string; password: string }) {
     return peticionApi(`${BASE_URL}/auth/login`, {method: "POST",body: JSON.stringify(data),  });
 }
 
-export function getHamburguesa(){
-    return peticionApi(`${BASE_URL}/products`)
+export async function getAllProductos(): Promise<IProducto[]> {
+    return peticionApi(`${BASE_URL}/products`);
 }
+
+export async function getProductosByCategoria(categoria: string): Promise<IProducto[]> {
+    const productos = await getAllProductos();
+    return productos.filter((p: IProducto) => 
+        p.category?.toLowerCase() === categoria.toLowerCase()
+    );
+}
+
+export function getHamburguesas(): Promise<IProducto[]> {
+    return getProductosByCategoria("comida");
+}
+
+export function getBebidas(): Promise<IProducto[]> {
+    return getProductosByCategoria("bebida");
+}
+
+export function getSalsas(): Promise<IProducto[]> {
+    return getProductosByCategoria("salsa");
+}
+
+export function getPostres(): Promise<IProducto[]> {
+    return getProductosByCategoria("postre");
+}
+
 
 export function getMe() {
     return peticionApi(`${BASE_URL}/users/me`);
 }
+
