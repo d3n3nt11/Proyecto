@@ -38,6 +38,10 @@ export function login(data: { name: string; password: string }) {
     return peticionApi(`${BASE_URL}/auth/login`, {method: "POST",body: JSON.stringify(data),  });
 }
 
+export function getHamburguesa(){
+    return peticionApi(`${BASE_URL}/products`)
+}
+
 export function getMe() {
     return peticionApi(`${BASE_URL}/users/me`);
 }
