@@ -1,8 +1,11 @@
 import type { IProducto } from "../types/Interfaces";
+import { productosList } from "./data";
+
+// CAMBIA ESTO A false CUANDO TENGAS LA API LISTA
+const USAR_DATOS_LOCALES = true;
 
 const BASE_URL = "http://localhost:8081/api";
 
-// Función helper para hacer peticiones HTTP
 async function peticionApi(url: string, options?: any) {
     try {
         const token = localStorage.getItem("token");
@@ -16,17 +19,14 @@ async function peticionApi(url: string, options?: any) {
             ...options,
         });
 
-        // Si la respuesta no es OK, lanzamos error
         if (!respuesta.ok) {
             throw new Error(`Error en el inicio de sesion`);
         }
 
-        // Si es 204, retornamos null
         if (respuesta.status === 204) {
             return null;
         }
         
-        // Devolvemos los datos como JSON
         return respuesta.json();
         
     } catch (error) {
@@ -36,15 +36,30 @@ async function peticionApi(url: string, options?: any) {
 }
 
 export function login(data: { name: string; password: string }) {
-    return peticionApi(`${BASE_URL}/auth/login`, {method: "POST",body: JSON.stringify(data),  });
+    return peticionApi(`${BASE_URL}/auth/login`, {
+        method: "POST",
+        body: JSON.stringify(data),
+    });
 }
 
+// FUNCIONES DE PRODUCTOS
+
 export async function getAllProductos(): Promise<IProducto[]> {
+    if (USAR_DATOS_LOCALES) {
+        console.log("Usando datos locales");
+        return productosList;
+    }
     return peticionApi(`${BASE_URL}/products`);
 }
 
 export async function getProductosByCategoria(categoria: string): Promise<IProducto[]> {
-    const productos = await getAllProductos();
+    if (USAR_DATOS_LOCALES) {
+        console.log(`Filtrando localmente: ${categoria}`);
+        return productosList.filter((p) => 
+            p.category?.toLowerCase() === categoria.toLowerCase()
+        );
+    }
+    const productos = await peticionApi(`${BASE_URL}/products`);
     return productos.filter((p: IProducto) => 
         p.category?.toLowerCase() === categoria.toLowerCase()
     );
@@ -66,8 +81,7 @@ export function getPostres(): Promise<IProducto[]> {
     return getProductosByCategoria("postre");
 }
 
-
 export function getMe() {
+    // getMe siempre va a la API (necesita token real)
     return peticionApi(`${BASE_URL}/users/me`);
 }
-
