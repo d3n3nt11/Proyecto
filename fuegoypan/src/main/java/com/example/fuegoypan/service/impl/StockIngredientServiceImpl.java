@@ -43,11 +43,10 @@ public class StockIngredientServiceImpl implements StockIngredientService {
         stock.setMaxStock(newStock);
         stockRepo.save(stock);
 
-        // ⚡ Alertas si baja del mínimo
+        // Solo log, las alertas reales se gestionan en el Scheduler
         if (checkMin && stock.getMaxStock() < stock.getMinStock()) {
             System.out.println("ALERTA: Stock bajo de " + stock.getIngredient().getName() +
                     " (" + stock.getMaxStock() + "/" + stock.getMinStock() + ")");
-            // Aquí  WhatsApp API
         }
 
         return mapToDTO(stock);
