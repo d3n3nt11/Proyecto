@@ -5,6 +5,11 @@ import Inicio from "./pages/Login"
 import Bebidas from "./pages/Bebidas"
 import Postre from "./pages/Postre"
 import Salsas from "./pages/Salsas"
+import Ajustes from "./pages/Ajustes"
+import Informes from "./pages/Informes"
+import Comprar from "./pages/Comprar"
+import Perfil from "./pages/Perfil"
+
 function App() {
   return (
     <>
@@ -15,6 +20,11 @@ function App() {
         <Route path="/bebidas" element={<Bebidas/>}/>
         <Route path="/salsas" element={<Salsas/>}/>
         <Route path="/postre" element={<Postre/>}/>
+        <Route path="/ajustes" element={<Ajustes/>}/>
+        <Route path="/informes" element={<Informes/>}/>
+        <Route path="/comprar" element={<Comprar/>}/>
+        <Route path="/perfil" element={<Perfil/>}/>
+
       </Routes>
     </>
   )

@@ -3,6 +3,7 @@ import CardFood from "../Components/CardFood";
 import { getBebidas } from "../data/api";
 import type { IProducto } from "../types/Interfaces";
 import MenuCategoria from "../Components/MenuCategoria";
+import SubNavegacion from "../Components/SubNavegacion";
 
 export default function Bebidas() {
     const uid = React.useId();
@@ -28,14 +29,14 @@ export default function Bebidas() {
 
     //Useeeffect para el buscador
     useEffect(() => {
-      if (search.trim() === "") {
-        setFilteredBebidas(productos);
-      } else {
-        const findBebidas = productos.filter((p) =>
-          p.name.toLowerCase().includes(search.toLowerCase())
-        );
-        setFilteredBebidas(findBebidas);
-      }
+        if (search.trim() === "") {
+            setFilteredBebidas(productos);
+        } else {
+            const findBebidas = productos.filter((p) =>
+            p.name.toLowerCase().includes(search.toLowerCase())
+            );
+            setFilteredBebidas(findBebidas);
+        }
     }, [search, productos]);
 
     return (
@@ -63,20 +64,20 @@ export default function Bebidas() {
             <MenuCategoria />
             {loading && <p className="text-gray-600 mt-4">Cargando...</p>}
             {!loading && (
-            <div className="grid grid-cols-4 gap-5 p-4 mt-5">
-                {filteredBebidas.map((producto) => (
-                    <CardFood
-                        key={`${uid}-${producto.id}`}
-                        data={producto}
-                        onAdd={(p) => console.log("Añadido:", p.name)}
-                    />
-                ))}
-            </div>
-        )}
-            
+                <div className="grid grid-cols-4 gap-5 p-4 mt-5">
+                    {filteredBebidas.map((producto) => (
+                        <CardFood
+                            key={`${uid}-${producto.id}`}
+                            data={producto}
+                            onAdd={(p) => console.log("Añadido:", p.name)}
+                        />
+                    ))}
+                </div>
+            )}
             {!loading && filteredBebidas.length === 0 && (
                 <p className="text-gray-500 mt-4">No hay productos disponibles</p>
             )}
+            <SubNavegacion/>
         </div>
     );
 }

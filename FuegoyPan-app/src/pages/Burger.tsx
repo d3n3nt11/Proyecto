@@ -3,6 +3,7 @@ import CardFood from "../Components/CardFood";
 import { getHamburguesas } from "../data/api";
 import type { IProducto } from "../types/Interfaces";
 import MenuCategoria from "../Components/MenuCategoria";
+import SubNavegacion from "../Components/SubNavegacion";
 
 export default function Burger() {
   const uid = React.useId();
@@ -77,6 +78,7 @@ export default function Burger() {
           {!loading && filteredHamburguesas.length === 0 && (
               <p className="text-gray-500 mt-4">No hay productos disponibles</p>
           )}
+          <SubNavegacion/>
         </div>
     );
 }

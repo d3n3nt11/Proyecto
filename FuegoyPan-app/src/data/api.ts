@@ -82,6 +82,6 @@ export function getPostres(): Promise<IProducto[]> {
 }
 
 export function getMe() {
-    // getMe siempre va a la API (necesita token real)
+    // getMe siempre va a la API 
     return peticionApi(`${BASE_URL}/users/me`);
 }

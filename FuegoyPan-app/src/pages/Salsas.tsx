@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import CardFood from "../Components/CardFood";
-import { getSalsas } from "../data/api";  // ✅ Importamos la función para obtener salsas
-import type { IProducto } from "../types/Interfaces";
+import { getSalsas } from "../data/api";  
 import MenuCategoria from "../Components/MenuCategoria";
+import SubNavegacion from "../Components/SubNavegacion";
+import type { IProducto } from "../types/Interfaces";
 
 export default function Salsas() {
     // Generamos un ID único para las keys de React (evita warnings)
@@ -20,7 +21,7 @@ export default function Salsas() {
     // Estado para las salsas filtradas según la búsqueda
     const [filteredSalsas, setFilteredSalsas] = useState<IProducto[]>([]);
 
-    // ✅ useEffect #1: Cargar las salsas cuando el componente se monta
+    // Cargar las salsas cuando el componente se monta
     useEffect(() => {
         const cargarSalsas = async () => {
             try {
@@ -40,13 +41,13 @@ export default function Salsas() {
         cargarSalsas();
     }, []); // El array vacío [] significa: "ejecutar solo al montar el componente"
 
-    // ✅ useEffect #2: Filtrar las salsas cuando cambia el buscador o los productos
+    // Filtrar las salsas cuando cambia el buscador o los productos
     useEffect(() => {
         if (search.trim() === "") {
             // Si el buscador está vacío, mostramos todas las salsas
             setFilteredSalsas(productos);
         } else {
-            // Si hay texto, filtramos por nombre (ignorando mayúsculas/minúsculas)
+            // Si hay texto, filtramos por nombre ignorando mayúsculas/minúsculas
             const findSalsas = productos.filter((p) =>
                 p.name.toLowerCase().includes(search.toLowerCase())
             );
@@ -107,6 +108,7 @@ export default function Salsas() {
             {!loading && filteredSalsas.length === 0 && (
                 <p className="text-gray-500 mt-4">No hay productos disponibles</p>
             )}
+            <SubNavegacion/>
         </div>
     );
 }
