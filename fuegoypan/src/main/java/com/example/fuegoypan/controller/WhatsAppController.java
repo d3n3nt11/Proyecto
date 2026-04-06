@@ -41,7 +41,7 @@ public class WhatsAppController {
         return "No entiendo el comando.\nEscribe 'ayuda'";
     }
 
-    // 🔥 VER TODO
+    //  VER TODO
     private String buildFullStatus() {
         List<StockIngredientDTO> all = stockService.getAllStock();
 
@@ -50,14 +50,14 @@ public class WhatsAppController {
         LocalDate today = LocalDate.now();
 
         all.forEach(s -> {
-            boolean lowStock = s.getMaxStock() < s.getMinStock();
+            boolean lowStock = s.getCurrentStock() < s.getMinStock();
             boolean expired = s.getExpirationDate() != null && !s.getExpirationDate().isAfter(today);
 
             response.append("- ")
                     .append(s.getIngredientName())
-                    .append(" | Stock: ")
-                    .append(s.getMaxStock())
-                    .append("/")
+                    .append(" | En stock: ")
+                    .append(s.getCurrentStock())
+                    .append(" | Minimo:")
                     .append(s.getMinStock());
 
             if (lowStock) {
@@ -74,7 +74,7 @@ public class WhatsAppController {
         return response.toString();
     }
 
-    // 📦 STOCK BAJO
+    //  STOCK BAJO
     private String buildStockResponse() {
         List<StockIngredientDTO> all = stockService.getAllStock();
 
@@ -83,12 +83,12 @@ public class WhatsAppController {
         boolean hasLow = false;
 
         for (var s : all) {
-            if (s.getMaxStock() < s.getMinStock()) {
+            if (s.getCurrentStock() < s.getMinStock()) {
                 hasLow = true;
                 response.append("- ")
                         .append(s.getIngredientName())
                         .append(" (")
-                        .append(s.getMaxStock())
+                        .append(s.getCurrentStock())
                         .append("/")
                         .append(s.getMinStock())
                         .append(")\n");
@@ -102,7 +102,7 @@ public class WhatsAppController {
         return response.toString();
     }
 
-    // ⏰ CADUCADOS
+    //  CADUCADOS
     private String buildExpiredResponse() {
         List<StockIngredientDTO> all = stockService.getAllStock();
 

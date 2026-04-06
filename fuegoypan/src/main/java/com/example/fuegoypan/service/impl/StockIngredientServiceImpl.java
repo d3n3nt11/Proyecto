@@ -4,6 +4,7 @@ import com.example.fuegoypan.dto.StockIngredientDTO;
 import com.example.fuegoypan.model.StockIngredient;
 import com.example.fuegoypan.repository.StockIngredientRepo;
 import com.example.fuegoypan.service.StockIngredientService;
+import com.example.fuegoypan.service.WhatsAppService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 public class StockIngredientServiceImpl implements StockIngredientService {
 
     private final StockIngredientRepo stockRepo;
+    private final WhatsAppService whatsappService;
 
-    public StockIngredientServiceImpl(StockIngredientRepo stockRepo) {
+    public StockIngredientServiceImpl(StockIngredientRepo stockRepo, WhatsAppService whatsappService) {
         this.stockRepo = stockRepo;
+        this.whatsappService = whatsappService;
     }
 
     @Override
@@ -37,16 +40,19 @@ public class StockIngredientServiceImpl implements StockIngredientService {
 
     @Override
     public StockIngredientDTO updateStock(Long ingredientId, Double newStock, boolean checkMin) {
+
         StockIngredient stock = stockRepo.findById(ingredientId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Stock no encontrado"));
 
-        stock.setMaxStock(newStock);
+        stock.setCurrentStock(newStock);
         stockRepo.save(stock);
 
-        // Solo log, las alertas reales se gestionan en el Scheduler
-        if (checkMin && stock.getMaxStock() < stock.getMinStock()) {
-            System.out.println("ALERTA: Stock bajo de " + stock.getIngredient().getName() +
-                    " (" + stock.getMaxStock() + "/" + stock.getMinStock() + ")");
+        //  ALERTA INMEDIATA
+        if (stock.getCurrentStock() < stock.getMinStock()) {
+            whatsappService.sendMessage(
+                    "ALERTA STOCK BAJO: " + stock.getIngredient().getName() +
+                            " (" + stock.getCurrentStock() + "/" + stock.getMinStock() + ")"
+            );
         }
 
         return mapToDTO(stock);
@@ -55,7 +61,7 @@ public class StockIngredientServiceImpl implements StockIngredientService {
     @Override
     public List<StockIngredientDTO> getIngredientsBelowMin() {
         return stockRepo.findAll().stream()
-                .filter(s -> s.getMaxStock() < s.getMinStock())
+                .filter(s -> s.getCurrentStock() < s.getMinStock())
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
@@ -73,7 +79,7 @@ public class StockIngredientServiceImpl implements StockIngredientService {
         StockIngredientDTO dto = new StockIngredientDTO();
         dto.setIngredientId(stock.getIngredient().getId());
         dto.setIngredientName(stock.getIngredient().getName());
-        dto.setMaxStock(stock.getMaxStock());
+        dto.setCurrentStock(stock.getCurrentStock());
         dto.setMinStock(stock.getMinStock());
         dto.setExpirationDate(stock.getExpirationDate());
         return dto;

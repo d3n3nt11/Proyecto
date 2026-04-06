@@ -8,7 +8,7 @@ public class StockIngredientDTO {
 
     private Long ingredientId;
     private String ingredientName;
-    private Double maxStock;
+    private Double currentStock;
     private Double minStock;
     private LocalDate expirationDate;
 
@@ -17,7 +17,7 @@ public class StockIngredientDTO {
 
     public StockIngredientDTO(Long ingredientId, Double maxStock, String ingredientName, Double minStock, LocalDate expirationDate) {
         this.ingredientId = ingredientId;
-        this.maxStock = maxStock;
+        this.currentStock = maxStock;
         this.ingredientName = ingredientName;
         this.minStock = minStock;
         this.expirationDate = expirationDate;
@@ -39,12 +39,12 @@ public class StockIngredientDTO {
         this.ingredientName = ingredientName;
     }
 
-    public Double getMaxStock() {
-        return maxStock;
+    public Double getCurrentStock() {
+        return currentStock;
     }
 
-    public void setMaxStock(Double maxStock) {
-        this.maxStock = maxStock;
+    public void setCurrentStock(Double currentStock) {
+        this.currentStock = currentStock;
     }
 
     public Double getMinStock() {
