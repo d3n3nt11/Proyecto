@@ -34,3 +34,13 @@
         category: "comida" | "bebida" | "postre" | "salsa";
         imageUrl?: string;
     }
+    // Datos de un ingrediente
+    export interface IIngrediente {
+    id: number;
+    nombre: string;
+    cantidad: number;
+    imageUrl?: string;        // URL de la imagen del ingrediente (opcional)
+    unidad: string;           // kg, g, litros, unidades, etc.
+    minimo?: number;          // Stock mínimo para alertas (opcional)
+    caducidad?: string;       // Fecha de caducidad (opcional, formato YYYY-MM-DD)
+}

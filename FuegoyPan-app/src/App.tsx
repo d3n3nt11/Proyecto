@@ -9,6 +9,9 @@ import Ajustes from "./pages/Ajustes"
 import Informes from "./pages/Informes"
 import Comprar from "./pages/Comprar"
 import Perfil from "./pages/Perfil"
+import ConfigurarInventario from "./pages/ajustes/ConfigurarInventario"
+import ReponerInventario from "./pages/ajustes/ReponerInventario"
+import VerInventario from "./pages/ajustes/VerInventario"
 
 function App() {
   return (
@@ -24,7 +27,9 @@ function App() {
         <Route path="/informes" element={<Informes/>}/>
         <Route path="/comprar" element={<Comprar/>}/>
         <Route path="/perfil" element={<Perfil/>}/>
-
+        <Route path="/ajustes/VerInventario" element={<VerInventario/>}/>
+        <Route path="/ajustes/ReponerInventario" element={<ReponerInventario/>}/>
+        <Route path="/ajustes/ConfigurarPorcentaje" element={<ConfigurarInventario/>}/>
       </Routes>
     </>
   )

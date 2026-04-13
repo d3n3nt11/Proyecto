@@ -1,5 +1,6 @@
-import type { IProducto } from "../types/Interfaces";
+import type { IIngrediente, IProducto } from "../types/Interfaces";
 import { productosList } from "./data";
+import { ingredientesList } from "./dataIngredientes";
 
 // CAMBIA ESTO A false CUANDO TENGAS LA API LISTA
 const USAR_DATOS_LOCALES = true;
@@ -42,8 +43,14 @@ export function login(data: { name: string; password: string }) {
     });
 }
 
+export async function getIngredientes(): Promise<IIngrediente[]> {
+    if (USAR_DATOS_LOCALES) {
+        console.log("Usando datos locales de ingredientes");
+        return ingredientesList; // Aquí deberías devolver una lista de ingredientes, no productos
+    }
+    return peticionApi(`${BASE_URL}/ingredients`);
+}
 // FUNCIONES DE PRODUCTOS
-
 export async function getAllProductos(): Promise<IProducto[]> {
     if (USAR_DATOS_LOCALES) {
         console.log("Usando datos locales");
