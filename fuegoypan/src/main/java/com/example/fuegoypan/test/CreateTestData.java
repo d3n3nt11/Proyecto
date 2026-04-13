@@ -37,18 +37,25 @@ public class CreateTestData implements CommandLineRunner {
         Ingredient patata = crearIngredienteSiNoExiste("Patata", "kg");
         Ingredient aceite = crearIngredienteSiNoExiste("Aceite", "litros");
 
-        //  STOCK
-        crearStockSiNoExiste(pan, 50.0, 5.0, LocalDate.now().plusDays(7));
-        crearStockSiNoExiste(carne, 20.0, 2.0, LocalDate.now().plusDays(5));
-        crearStockSiNoExiste(queso, 30.0, 3.0, LocalDate.now().plusDays(10));
-        crearStockSiNoExiste(lechuga, 10.0, 1.0, LocalDate.now().plusDays(4));
-        crearStockSiNoExiste(tomate, 10.0, 1.0, LocalDate.now().plusDays(4));
-        crearStockSiNoExiste(patata, 15.0, 2.0, LocalDate.now().plusDays(10));
-        crearStockSiNoExiste(aceite, 5.0, 1.0, LocalDate.now().plusDays(30));
+        //  STOCK (current, max, min)
+        crearStockSiNoExiste(pan, 50.0, 100.0, 5.0, LocalDate.now().plusDays(7));
+        crearStockSiNoExiste(carne, 20.0, 50.0, 2.0, LocalDate.now().plusDays(5));
+        crearStockSiNoExiste(queso, 30.0, 60.0, 3.0, LocalDate.now().plusDays(10));
+        crearStockSiNoExiste(lechuga, 10.0, 30.0, 1.0, LocalDate.now().plusDays(4));
+        crearStockSiNoExiste(tomate, 10.0, 30.0, 1.0, LocalDate.now().plusDays(4));
+        crearStockSiNoExiste(patata, 15.0, 40.0, 2.0, LocalDate.now().plusDays(10));
+        crearStockSiNoExiste(aceite, 5.0, 20.0, 1.0, LocalDate.now().plusDays(30));
 
         //  PRODUCTOS
-        Product cheeseBurger = crearProductoSiNoExiste("Cheese Burger", 8.5, "Hamburguesa con queso, lechuga y tomate", true);
-        Product frenchFries = crearProductoSiNoExiste("Patatas Fritas", 3.5, "Patatas fritas crujientes", true);
+        Product cheeseBurger = crearProductoSiNoExiste(
+                "Cheese Burger", 8.5,
+                "Hamburguesa con queso, lechuga y tomate", true
+        );
+
+        Product frenchFries = crearProductoSiNoExiste(
+                "Patatas Fritas", 3.5,
+                "Patatas fritas crujientes", true
+        );
 
         // RECETAS
         crearRecipeSiNoExiste(cheeseBurger, pan, 1.0);
@@ -60,7 +67,7 @@ public class CreateTestData implements CommandLineRunner {
         crearRecipeSiNoExiste(frenchFries, patata, 0.25);
         crearRecipeSiNoExiste(frenchFries, aceite, 0.05);
 
-        System.out.println("✔ Datos de prueba de productos e ingredientes creados.");
+        System.out.println("✔ Datos de prueba creados correctamente.");
     }
 
     // -------------------- MÉTODOS AUXILIARES --------------------
@@ -78,13 +85,22 @@ public class CreateTestData implements CommandLineRunner {
                 });
     }
 
-    private void crearStockSiNoExiste(Ingredient ing, double maxStock, double minStock, LocalDate expiration) {
+    private void crearStockSiNoExiste(Ingredient ing,
+                                      double currentStock,
+                                      double maxStock,
+                                      double minStock,
+                                      LocalDate expiration) {
+
         if (stockRepo.findById(ing.getId()).isEmpty()) {
+
             StockIngredient stock = new StockIngredient();
             stock.setIngredient(ing);
+
+            stock.setCurrentStock(currentStock); // 🔥 CLAVE
             stock.setMaxStock(maxStock);
             stock.setMinStock(minStock);
             stock.setExpirationDate(expiration);
+
             stockRepo.save(stock);
         }
     }
@@ -106,6 +122,7 @@ public class CreateTestData implements CommandLineRunner {
 
     private void crearRecipeSiNoExiste(Product product, Ingredient ingredient, double cantidad) {
         RecipeId id = new RecipeId(product.getId(), ingredient.getId());
+
         if (recipeRepo.findById(id).isEmpty()) {
             Recipe recipe = new Recipe();
             recipe.setId(id);

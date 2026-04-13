@@ -21,33 +21,56 @@ public class StockScheduler {
     }
 
     // Verificar stock mínimo cada hora
-    @Scheduled(cron = "0 0 * * * ?")
+//    @Scheduled(cron = "0 0 * * * ?")
+//    public void checkMinStock() {
+//
+//        var lowStock = stockService.getIngredientsBelowMin();
+//
+//        if (!lowStock.isEmpty() && !stockAlertSent) {
+//
+//            StringBuilder msg = new StringBuilder(" STOCK BAJO:\n");
+//            msg.append("Revisar inventario urgentemente\n\n");
+//
+//            lowStock.forEach(stock ->
+//                    msg.append("- ")
+//                            .append(stock.getIngredientName())
+//                            .append(" (")
+//                            .append(stock.getCurrentStock())
+//                            .append("/")
+//                            .append(stock.getMinStock())
+//                            .append(")\n")
+//            );
+//
+//            whatsappService.sendMessage(msg.toString());
+//            stockAlertSent = true;
+//        }
+//
+//        // Reset si ya no hay problema
+//        if (lowStock.isEmpty()) {
+//            stockAlertSent = false;
+//        }
+//    }
+
+    @Scheduled(fixedRate = 5000)
     public void checkMinStock() {
 
         var lowStock = stockService.getIngredientsBelowMin();
 
-        if (!lowStock.isEmpty() && !stockAlertSent) {
+        if (!lowStock.isEmpty()) {
 
-            StringBuilder msg = new StringBuilder(" STOCK BAJO:\n");
-            msg.append("Revisar inventario urgentemente\n\n");
+            StringBuilder msg = new StringBuilder("STOCK BAJO:\n\n");
 
             lowStock.forEach(stock ->
                     msg.append("- ")
                             .append(stock.getIngredientName())
                             .append(" (")
-                            .append(stock.getMaxStock())
+                            .append(stock.getCurrentStock())
                             .append("/")
                             .append(stock.getMinStock())
                             .append(")\n")
             );
 
             whatsappService.sendMessage(msg.toString());
-            stockAlertSent = true;
-        }
-
-        // Reset si ya no hay problema
-        if (lowStock.isEmpty()) {
-            stockAlertSent = false;
         }
     }
 

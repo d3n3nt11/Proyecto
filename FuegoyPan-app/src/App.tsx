@@ -12,7 +12,6 @@ import Perfil from "./pages/Perfil"
 import ConfigurarInventario from "./pages/ajustes/ConfigurarInventario"
 import ReponerInventario from "./pages/ajustes/ReponerInventario"
 import VerInventario from "./pages/ajustes/VerInventario"
-
 function App() {
   return (
     <>

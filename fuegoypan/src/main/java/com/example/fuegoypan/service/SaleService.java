@@ -9,4 +9,6 @@ public interface SaleService {
     SaleDTO createSale(SaleCreateDTO dto);
     List<SaleDTO> getAll();
     SaleDTO getById(Long id);
+    SaleDTO updateStatus(Long id, String status);
+    SaleDTO cancelSale(Long id);
 }
