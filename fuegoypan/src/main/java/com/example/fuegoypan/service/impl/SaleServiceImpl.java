@@ -46,7 +46,8 @@ public class SaleServiceImpl implements SaleService {
         //  Crear venta
         Sale sale = new Sale();
         sale.setUser(user);
-        sale.setStatus(dto.getStatus());
+        sale.setStatus(
+        dto.getStatus() != null ? dto.getStatus() : SaleStatus.OPEN);
 
         List<SaleLine> lines = new ArrayList<>();
 

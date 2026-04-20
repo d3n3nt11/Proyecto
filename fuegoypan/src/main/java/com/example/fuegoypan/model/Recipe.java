@@ -1,43 +1,42 @@
 package com.example.fuegoypan.model;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
-@Table(name = "recipe")
+@Table(name = "recipe",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"product_id", "ingredient_id"}))
 public class Recipe {
-    @EmbeddedId
-    private RecipeId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("productId")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("ingredientId")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "ingredient_id")
     private Ingredient ingredient;
 
     @Column(nullable = false)
     private Double quantity;
 
+    // 🔹 Constructor vacío (obligatorio para JPA)
     public Recipe() {
     }
 
+    // 🔹 Constructor útil
     public Recipe(Product product, Ingredient ingredient, Double quantity) {
         this.product = product;
         this.ingredient = ingredient;
         this.quantity = quantity;
-        this.id = new RecipeId(product.getId(), ingredient.getId());
     }
 
-    public RecipeId getId() {
+    // 🔹 Getters y Setters
+
+    public Long getId() {
         return id;
-    }
-
-    public void setId(RecipeId id) {
-        this.id = id;
     }
 
     public Product getProduct() {

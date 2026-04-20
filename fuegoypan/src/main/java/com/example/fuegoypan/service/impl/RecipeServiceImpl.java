@@ -36,8 +36,16 @@ public class RecipeServiceImpl implements RecipeService {
         Ingredient ingredient = ingredientRepo.findById(dto.getIngredientId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingrediente no encontrado"));
 
+        // comprobar si ya existe (por el unique constraint)
+        Recipe existing = recipeRepo
+                .findByProductIdAndIngredientId(dto.getProductId(), dto.getIngredientId())
+                .orElse(null);
+
+        if (existing != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El ingrediente ya existe en la receta");
+        }
+
         Recipe recipe = new Recipe();
-        recipe.setId(new RecipeId(product.getId(), ingredient.getId()));
         recipe.setProduct(product);
         recipe.setIngredient(ingredient);
         recipe.setQuantity(dto.getQuantity());
@@ -50,11 +58,12 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public RecipeDTO updateIngredientQuantity(RecipeCreateDTO dto) {
 
-        RecipeId id = new RecipeId(dto.getProductId(), dto.getIngredientId());
-        Recipe recipe = recipeRepo.findById(id)
+        Recipe recipe = recipeRepo
+                .findByProductIdAndIngredientId(dto.getProductId(), dto.getIngredientId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Receta no encontrada"));
 
         recipe.setQuantity(dto.getQuantity());
+
         Recipe saved = recipeRepo.save(recipe);
 
         return mapToDTO(saved);
@@ -62,19 +71,24 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public void removeIngredientFromProduct(Long productId, Long ingredientId) {
-        RecipeId id = new RecipeId(productId, ingredientId);
-        Recipe recipe = recipeRepo.findById(id)
+
+        Recipe recipe = recipeRepo
+                .findByProductIdAndIngredientId(productId, ingredientId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Receta no encontrada"));
+
         recipeRepo.delete(recipe);
     }
 
     @Override
     public List<RecipeDTO> getIngredientsByProduct(Long productId) {
 
-        Product product = productRepo.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
+        // opcional validar producto
+        if (!productRepo.existsById(productId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado");
+        }
 
-        return product.getRecipeItems().stream()
+        return recipeRepo.findByProductId(productId)
+                .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }

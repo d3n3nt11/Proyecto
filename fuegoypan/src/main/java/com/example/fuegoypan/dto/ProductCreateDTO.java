@@ -1,6 +1,7 @@
 package com.example.fuegoypan.dto;
 
 
+import com.example.fuegoypan.model.Category;
 
 public class ProductCreateDTO {
 
@@ -8,16 +9,18 @@ public class ProductCreateDTO {
     private Double price;
     private String description;
     private Boolean visible;
+    private Category category;
+    private String imageUrl;
 
+    public ProductCreateDTO() {}
 
-    public ProductCreateDTO() {
-    }
-
-    public ProductCreateDTO(String name, Double price, String description, Boolean visible) {
+    public ProductCreateDTO(String name, Double price, String description, Boolean visible, Category category, String imageUrl) {
         this.name = name;
         this.price = price;
         this.description = description;
         this.visible = visible;
+        this.category = category;
+        this.imageUrl = imageUrl;
     }
 
     public String getName() {
@@ -50,5 +53,21 @@ public class ProductCreateDTO {
 
     public void setVisible(Boolean visible) {
         this.visible = visible;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

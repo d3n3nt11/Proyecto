@@ -34,6 +34,7 @@ public class Sale {
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SaleLine> lines = new ArrayList<>();
 
+
     // CONSTRUCTORES
 
     public Sale() {

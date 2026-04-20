@@ -25,49 +25,73 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
         String path = request.getServletPath();
-        // Ignorar auth endpoints
+
+        // dejar libres auth endpoints
         if (path.startsWith("/api/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String name;
 
+        //  sin token → dejamos pasar (Spring decidirá si es público o no)
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7);
+        final String jwt = authHeader.substring(7);
+        final String username;
+
+        // token inválido
         try {
-            name = jwtService.extractUsername(jwt);
+            username = jwtService.extractUsername(jwt);
         } catch (Exception e) {
-            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        if (name != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(name);
 
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        // si no hay auth en contexto
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            UserDetails userDetails;
+
+            // usuario no existe o error en DB
+            try {
+                userDetails = userDetailsService.loadUserByUsername(username);
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
+
+            //  token inválido
+            if (!jwtService.isTokenValid(jwt, userDetails)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            //  todo correcto → autenticamos
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+
+            authToken.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request)
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);

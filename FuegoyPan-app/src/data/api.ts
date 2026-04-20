@@ -3,11 +3,11 @@ import { productosList } from "./data";
 import { ingredientesList } from "./dataIngredientes";
 
 // CAMBIA ESTO A false CUANDO TENGAS LA API LISTA
-const USAR_DATOS_LOCALES = true;
+const USAR_DATOS_LOCALES = false;
 
 const BASE_URL = "http://localhost:8081/api";
 
-async function peticionApi(url: string, options?: any) {
+export async function peticionApi(url: string, options?: any) {
     try {
         const token = localStorage.getItem("token");
         
@@ -21,7 +21,8 @@ async function peticionApi(url: string, options?: any) {
         });
 
         if (!respuesta.ok) {
-            throw new Error(`Error en el inicio de sesion`);
+            const errorText = await respuesta.text();
+            throw new Error(errorText || `Error HTTP ${respuesta.status}`);
         }
 
         if (respuesta.status === 204) {
@@ -66,6 +67,7 @@ export async function getProductosByCategoria(categoria: string): Promise<IProdu
             p.category?.toLowerCase() === categoria.toLowerCase()
         );
     }
+
     const productos = await peticionApi(`${BASE_URL}/products`);
     return productos.filter((p: IProducto) => 
         p.category?.toLowerCase() === categoria.toLowerCase()
@@ -91,4 +93,25 @@ export function getPostres(): Promise<IProducto[]> {
 export function getMe() {
     // getMe siempre va a la API 
     return peticionApi(`${BASE_URL}/users/me`);
+}
+
+//reportes
+export async function descargarInformeCSV(start: string, end: string) {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+        `${BASE_URL}/reports/sales/csv?start=${start}&end=${end}`,
+        {
+            method: "GET",
+            headers: {
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error al descargar el informe");
+    }
+
+    return response.blob(); // IMPORTANTE
 }

@@ -37,7 +37,7 @@ public class SaleController {
         return ResponseEntity.ok(saleService.getById(id));
     }
 
-    // 🔥 CAMBIAR ESTADO
+    // CAMBIAR ESTADO
     @PatchMapping("/{id}/status")
     public ResponseEntity<SaleDTO> updateStatus(
             @PathVariable Long id,
@@ -48,7 +48,7 @@ public class SaleController {
         );
     }
 
-    // 🔥 CANCELAR
+    // CANCELAR
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<SaleDTO> cancelSale(@PathVariable Long id) {
         return ResponseEntity.ok(

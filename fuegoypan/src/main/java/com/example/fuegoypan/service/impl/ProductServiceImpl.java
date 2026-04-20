@@ -29,6 +29,8 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(dto.getPrice());
         product.setDescription(dto.getDescription());
         product.setVisible(dto.getVisible());
+        product.setCategory(dto.getCategory());
+        product.setImageUrl(dto.getImageUrl());
 
         Product saved = productRepo.save(product);
         return mapToDTO(saved);
@@ -43,6 +45,8 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(dto.getPrice());
         product.setDescription(dto.getDescription());
         product.setVisible(dto.getVisible());
+        product.setCategory(dto.getCategory());
+        product.setImageUrl(dto.getImageUrl());
 
         Product saved = productRepo.save(product);
         return mapToDTO(saved);
@@ -72,6 +76,8 @@ public class ProductServiceImpl implements ProductService {
         dto.setPrice(product.getPrice());
         dto.setDescription(product.getDescription());
         dto.setVisible(product.getVisible());
+        dto.setCategory(product.getCategory());
+        dto.setImageUrl(product.getImageUrl());
         return dto;
     }
 }

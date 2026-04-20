@@ -40,6 +40,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/whatsapp").permitAll()
+                        .requestMatchers("/api/reports/**").permitAll()
+                        .requestMatchers("/api/sales/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
