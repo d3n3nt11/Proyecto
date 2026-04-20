@@ -4,7 +4,9 @@ import com.example.fuegoypan.dto.*;
 import com.example.fuegoypan.model.*;
 import com.example.fuegoypan.repository.*;
 import com.example.fuegoypan.service.SaleService;
+import com.example.fuegoypan.service.StockMovementService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,37 +23,44 @@ public class SaleServiceImpl implements SaleService {
     private final UserRepo userRepo;
     private final RecipeRepo recipeRepo;
     private final StockIngredientRepo stockRepo;
+    private final StockMovementService stockMovementService;
 
-    public SaleServiceImpl(SaleRepo saleRepo,
-                           ProductRepo productRepo,
-                           UserRepo userRepo,
-                           RecipeRepo recipeRepo,
-                           StockIngredientRepo stockRepo) {
+    public SaleServiceImpl(
+            SaleRepo saleRepo,
+            ProductRepo productRepo,
+            UserRepo userRepo,
+            RecipeRepo recipeRepo,
+            StockIngredientRepo stockRepo,
+            StockMovementService stockMovementService
+    ) {
         this.saleRepo = saleRepo;
         this.productRepo = productRepo;
         this.userRepo = userRepo;
         this.recipeRepo = recipeRepo;
         this.stockRepo = stockRepo;
+        this.stockMovementService = stockMovementService;
     }
 
     @Transactional
     @Override
-    public SaleDTO createSale(SaleCreateDTO dto) {
+    public SaleDTO createSale(SaleCreateDTO dto, Authentication auth) {
 
-        //  Validar usuario
-        User user = userRepo.findById(dto.getUserId())
+        String username = auth.getName();
+
+        User user = userRepo.findByName(username)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
-        //  Crear venta
+        // Crear venta
         Sale sale = new Sale();
         sale.setUser(user);
         sale.setStatus(
-        dto.getStatus() != null ? dto.getStatus() : SaleStatus.OPEN);
+                dto.getStatus() != null ? dto.getStatus() : SaleStatus.OPEN
+        );
 
         List<SaleLine> lines = new ArrayList<>();
 
-        //  Procesar líneas
+        // Procesar líneas
         for (SaleLineCreateDTO lineDTO : dto.getLines()) {
 
             Product product = productRepo.findById(lineDTO.getProductId())
@@ -63,18 +72,18 @@ public class SaleServiceImpl implements SaleService {
             line.setQuantity(lineDTO.getQuantity());
             line.setUnitPrice(product.getPrice());
 
-            //  Validar y descontar stock
+            // Validar y descontar stock
             if (product.getRecipeItems() != null) {
 
                 product.getRecipeItems().forEach(recipe -> {
 
-                    StockIngredient stock = stockRepo.findById(recipe.getIngredient().getId())
-                            .orElseThrow(() -> new ResponseStatusException(
-                                    HttpStatus.NOT_FOUND, "Stock del ingrediente no encontrado"));
+                    StockIngredient stock = stockRepo.findById(
+                            recipe.getIngredient().getId()
+                    ).orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND, "Stock del ingrediente no encontrado"));
 
                     double used = recipe.getQuantity() * lineDTO.getQuantity();
 
-                    //  VALIDACIÓN CRÍTICA
                     if (stock.getCurrentStock() < used) {
                         throw new ResponseStatusException(
                                 HttpStatus.BAD_REQUEST,
@@ -87,22 +96,22 @@ public class SaleServiceImpl implements SaleService {
                 });
             }
 
-            //  Relación bidireccional
             line.setSale(sale);
             lines.add(line);
         }
 
         sale.setLines(lines);
 
-        //  Calcular total
+        // Calcular total
         double total = lines.stream()
                 .mapToDouble(l -> l.getQuantity() * l.getUnitPrice())
                 .sum();
 
         sale.setTotal(total);
 
-        //  Guardar
+        // Guardar
         Sale saved = saleRepo.save(sale);
+        stockMovementService.registerSaleConsumption(sale.getId());
 
         return mapToDTO(saved);
     }
@@ -142,11 +151,11 @@ public class SaleServiceImpl implements SaleService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Venta no encontrada"));
 
-        if ("CANCELLED".equals(sale.getStatus())) {
+        if ("CANCELLED".equals(sale.getStatus().name())) {
             return mapToDTO(sale);
         }
 
-        //  DEVOLVER STOCK
+        // Devolver stock
         for (SaleLine line : sale.getLines()) {
 
             Product product = line.getProduct();
@@ -168,12 +177,12 @@ public class SaleServiceImpl implements SaleService {
             }
         }
 
-        sale.setStatus(SaleStatus.valueOf("CANCELLED"));
+        sale.setStatus(SaleStatus.CANCELLED);
 
         return mapToDTO(saleRepo.save(sale));
     }
 
-    //  Mapeo a DTO
+    // Mapeo a DTO
     private SaleDTO mapToDTO(Sale sale) {
         SaleDTO dto = new SaleDTO();
         dto.setId(sale.getId());

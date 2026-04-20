@@ -30,4 +30,18 @@ public class ReportController {
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(data);
     }
+
+    @GetMapping("/stock-movements/csv")
+    public ResponseEntity<byte[]> downloadStockMovementsCsv(
+            @RequestParam String start,
+            @RequestParam String end
+    ) {
+
+        byte[] data = reportService.generateStockMovementsCsv(start, end);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=stock_movements.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(data);
+    }
 }

@@ -12,6 +12,7 @@ import Perfil from "./pages/Perfil"
 import ConfigurarInventario from "./pages/ajustes/ConfigurarInventario"
 import ReponerInventario from "./pages/ajustes/ReponerInventario"
 import VerInventario from "./pages/ajustes/VerInventario"
+import Pago from "./pages/Pago"
 function App() {
   return (
     <>
@@ -25,6 +26,7 @@ function App() {
         <Route path="/ajustes" element={<Ajustes/>}/>
         <Route path="/informes" element={<Informes/>}/>
         <Route path="/comprar" element={<Comprar/>}/>
+        <Route path="/pago" element={<Pago />} />
         <Route path="/perfil" element={<Perfil/>}/>
         <Route path="/ajustes/VerInventario" element={<VerInventario/>}/>
         <Route path="/ajustes/ReponerInventario" element={<ReponerInventario/>}/>

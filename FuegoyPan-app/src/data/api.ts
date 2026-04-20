@@ -115,3 +115,20 @@ export async function descargarInformeCSV(start: string, end: string) {
 
     return response.blob(); // IMPORTANTE
 }
+
+export async function descargarStockMovements(start: string, end: string) {
+
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+         `${BASE_URL}/reports/stock-movements/csv?start=${start}&end=${end}`,
+        {
+            method: "GET",
+            headers: {
+                ...(token && { Authorization: `Bearer ${token}` })
+            }
+        }
+    );
+
+    return response.blob();
+}

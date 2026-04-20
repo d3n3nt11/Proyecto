@@ -11,7 +11,6 @@ public class StockMovementController {
 
     private final StockMovementService stockMovementService;
 
-    // Constructor manual en lugar de @RequiredArgsConstructor
     public StockMovementController(StockMovementService stockMovementService) {
         this.stockMovementService = stockMovementService;
     }

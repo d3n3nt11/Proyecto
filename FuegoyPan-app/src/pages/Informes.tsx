@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import SubNavegacion from '../Components/SubNavegacion'
-import { descargarInformeCSV } from '../data/api';
+import { descargarInformeCSV, descargarStockMovements } from '../data/api';
 
 
 export default function Informes() {
@@ -57,13 +57,23 @@ export default function Informes() {
                     {loading ? "Generando informe..." : "Descargar informe de ventas"}
                 </button>
 
-                <button
-                    type="button"
-                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full w-full"
-                    onClick={() => alert("Próximamente: productos más vendidos")}
-                >
-                    Productos más vendidos
-                </button>
+               <button
+                onClick={async () => {
+                    const blob = await descargarStockMovements("2026-04-01", "2026-04-30");
+
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+
+                    a.href = url;
+                    a.download = "stock_movements.csv";
+                    a.click();
+
+                    window.URL.revokeObjectURL(url);
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full w-full"
+            >
+                Descargar movimientos de stock
+            </button>
 
                 <button
                     type="button"

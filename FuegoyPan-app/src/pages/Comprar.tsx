@@ -1,10 +1,11 @@
 import SubNavegacion from "../Components/SubNavegacion";
 import { useCart } from "../context/cartContext";
 import { createSale } from "../data/saleApi";
+import { useNavigate } from "react-router-dom";
 
 export default function Comprar() {
   const { cart, removeFromCart, clearCart } = useCart();
-
+  const navigate = useNavigate();
   const total = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
@@ -12,10 +13,14 @@ export default function Comprar() {
 
   const handleCheckout = async () => {
   const token = localStorage.getItem("token");
-  console.log("TOKEN:", token);
+
+  if (!token) {
+    alert("Tienes que iniciar sesión");
+    return;
+  }
 
   const sale = {
-    status: "OPEN", 
+    status: "OPEN",
     lines: cart.map(item => ({
       productId: item.id,
       quantity: item.quantity
@@ -23,12 +28,19 @@ export default function Comprar() {
   };
 
   try {
-    await createSale(sale);
-    alert("Compra realizada");
+    const createdSale = await createSale(sale);
+
+    // 💾 guardamos el ID de la venta
+    localStorage.setItem("saleId", createdSale.id);
+
     clearCart();
+
+    // 👉 vamos a la pantalla de pago
+    navigate("/pago");
+
   } catch (err) {
-    console.error("ERROR CHECKOUT:", err);
-    alert("Error al pagar");
+    console.error(err);
+    alert(err instanceof Error ? err.message : "Error al pagar");
   }
 };
 
