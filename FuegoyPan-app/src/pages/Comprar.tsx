@@ -30,12 +30,12 @@ export default function Comprar() {
   try {
     const createdSale = await createSale(sale);
 
-    // 💾 guardamos el ID de la venta
+    // guardamos el ID de la venta
     localStorage.setItem("saleId", createdSale.id);
 
     clearCart();
 
-    // 👉 vamos a la pantalla de pago
+    // vamos a la pantalla de pago
     navigate("/pago");
 
   } catch (err) {

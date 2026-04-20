@@ -3,7 +3,7 @@ import { productosList } from "./data";
 import { ingredientesList } from "./dataIngredientes";
 
 // CAMBIA ESTO A false CUANDO TENGAS LA API LISTA
-const USAR_DATOS_LOCALES = false;
+const USAR_DATOS_LOCALES = true;
 
 const BASE_URL = "http://localhost:8081/api";
 
