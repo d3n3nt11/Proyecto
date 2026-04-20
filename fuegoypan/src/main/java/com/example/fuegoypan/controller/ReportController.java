@@ -1,21 +1,21 @@
 package com.example.fuegoypan.controller;
 
 import com.example.fuegoypan.service.ReportService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/reports")
-@RequiredArgsConstructor
 public class ReportController {
 
     private final ReportService reportService;
+
+    // Constructor manual (reemplaza @RequiredArgsConstructor)
+    public ReportController(ReportService reportService) {
+        this.reportService = reportService;
+    }
 
     @GetMapping("/sales/csv")
     public ResponseEntity<byte[]> downloadSalesCsv(

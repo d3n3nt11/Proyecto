@@ -3,7 +3,6 @@ package com.example.fuegoypan.service.impl;
 import com.example.fuegoypan.model.Sale;
 import com.example.fuegoypan.repository.SaleRepo;
 import com.example.fuegoypan.service.ReportService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -12,10 +11,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class ReportServiceImpl implements ReportService {
 
     private final SaleRepo saleRepository;
+
+    // Constructor manual
+    public ReportServiceImpl(SaleRepo saleRepository) {
+        this.saleRepository = saleRepository;
+    }
 
     @Override
     public byte[] generateSalesCsv(String start, String end) {
@@ -27,7 +30,6 @@ public class ReportServiceImpl implements ReportService {
 
         StringBuilder csv = new StringBuilder();
 
-        // cabecera
         csv.append("ID,Fecha,Total,Estado,Usuario\n");
 
         for (Sale s : sales) {
