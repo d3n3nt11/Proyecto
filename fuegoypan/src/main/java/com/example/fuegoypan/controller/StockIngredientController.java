@@ -1,5 +1,6 @@
 package com.example.fuegoypan.controller;
 
+import com.example.fuegoypan.dto.StockAlertDTO;
 import com.example.fuegoypan.dto.StockIngredientDTO;
 import com.example.fuegoypan.service.StockIngredientService;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class StockIngredientController {
     }
 
     @GetMapping("/below-min")
-    public ResponseEntity<List<StockIngredientDTO>> getBelowMin() {
+    public ResponseEntity<List<StockAlertDTO>> getBelowMin() {
         return ResponseEntity.ok(stockService.getIngredientsBelowMin());
     }
 

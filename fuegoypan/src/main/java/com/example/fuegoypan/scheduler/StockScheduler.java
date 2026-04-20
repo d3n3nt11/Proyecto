@@ -56,7 +56,7 @@ public class StockScheduler {
 
         var lowStock = stockService.getIngredientsBelowMin();
 
-        if (!lowStock.isEmpty()) {
+        if (!lowStock.isEmpty() && !stockAlertSent) {
 
             StringBuilder msg = new StringBuilder("STOCK BAJO:\n\n");
 
@@ -71,6 +71,12 @@ public class StockScheduler {
             );
 
             whatsappService.sendMessage(msg.toString());
+
+            stockAlertSent = true;
+        }
+
+        if (lowStock.isEmpty()) {
+            stockAlertSent = false;
         }
     }
 

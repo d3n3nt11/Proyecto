@@ -4,9 +4,12 @@ import { getPostres } from "../data/api";
 import type { IProducto } from "../types/Interfaces";
 import MenuCategoria from "../Components/MenuCategoria";
 import SubNavegacion from "../Components/SubNavegacion";
+import { useCart } from "../context/cartContext";
 
 export default function Postre() {
     const uid = React.useId();
+
+     const { addToCart } = useCart(); //  CART GLOBAL
     const [productos, setProductos] = useState<IProducto[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
@@ -69,7 +72,7 @@ export default function Postre() {
                         <CardFood
                             key={`${uid}-${producto.id}`}
                             data={producto}
-                            onAdd={(p) => console.log("Añadido:", p.name)}
+                            onAdd={(p) => addToCart(p)} // Aquí se añade al carrito
                         />
                     ))}
                 </div>

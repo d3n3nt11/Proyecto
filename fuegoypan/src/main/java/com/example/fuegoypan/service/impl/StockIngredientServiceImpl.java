@@ -1,5 +1,6 @@
 package com.example.fuegoypan.service.impl;
 
+import com.example.fuegoypan.dto.StockAlertDTO;
 import com.example.fuegoypan.dto.StockIngredientDTO;
 import com.example.fuegoypan.model.StockIngredient;
 import com.example.fuegoypan.repository.StockIngredientRepo;
@@ -59,11 +60,8 @@ public class StockIngredientServiceImpl implements StockIngredientService {
     }
 
     @Override
-    public List<StockIngredientDTO> getIngredientsBelowMin() {
-        return stockRepo.findAll().stream()
-                .filter(s -> s.getCurrentStock() < s.getMinStock())
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+    public List<StockAlertDTO> getIngredientsBelowMin() {
+        return stockRepo.findLowStock();
     }
 
     @Override

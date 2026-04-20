@@ -4,10 +4,13 @@ import { getSalsas } from "../data/api";
 import MenuCategoria from "../Components/MenuCategoria";
 import SubNavegacion from "../Components/SubNavegacion";
 import type { IProducto } from "../types/Interfaces";
+import { useCart } from "../context/cartContext";
 
 export default function Salsas() {
     // Generamos un ID único para las keys de React (evita warnings)
     const uid = React.useId();
+
+    const { addToCart } = useCart(); //  CART GLOBAL
     
     // Estado para almacenar la lista completa de salsas
     const [productos, setProductos] = useState<IProducto[]>([]);
@@ -98,7 +101,7 @@ export default function Salsas() {
                         <CardFood
                             key={`${uid}-${producto.id}`}  // Key única para React
                             data={producto}  // Pasamos los datos del producto
-                            onAdd={(p) => console.log("Añadido:", p.name)}  // Callback al añadir
+                            onAdd={(p) => addToCart(p)} // Aquí se añade al carrito
                         />
                     ))}
                 </div>

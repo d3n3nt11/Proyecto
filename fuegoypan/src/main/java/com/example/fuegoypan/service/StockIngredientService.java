@@ -1,5 +1,6 @@
 package com.example.fuegoypan.service;
 
+import com.example.fuegoypan.dto.StockAlertDTO;
 import com.example.fuegoypan.dto.StockIngredientDTO;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface StockIngredientService {
 
     StockIngredientDTO updateStock(Long ingredientId, Double newStock, boolean checkMin); // Actualizar stock manualmente
 
-    List<StockIngredientDTO> getIngredientsBelowMin(); // Para alertas de stock mínimo
+    List<StockAlertDTO> getIngredientsBelowMin(); // Para alertas de stock mínimo
 
     List<StockIngredientDTO> getIngredientsExpired(); // Para alertas de caducidad
 }
