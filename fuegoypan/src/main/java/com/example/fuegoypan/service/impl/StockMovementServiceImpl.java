@@ -4,14 +4,12 @@ import com.example.fuegoypan.dto.StockMovementDTO;
 import com.example.fuegoypan.model.*;
 import com.example.fuegoypan.repository.*;
 import com.example.fuegoypan.service.StockMovementService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class StockMovementServiceImpl implements StockMovementService {
 
     private final StockMovementRepo stockMovementRepo;
@@ -19,6 +17,21 @@ public class StockMovementServiceImpl implements StockMovementService {
     private final SaleRepo saleRepo;
     private final RecipeRepo recipeRepo;
     private final StockIngredientRepo stockIngredientRepo;
+
+    // Constructor manual
+    public StockMovementServiceImpl(
+            StockMovementRepo stockMovementRepo,
+            IngredientRepo ingredientRepo,
+            SaleRepo saleRepo,
+            RecipeRepo recipeRepo,
+            StockIngredientRepo stockIngredientRepo
+    ) {
+        this.stockMovementRepo = stockMovementRepo;
+        this.ingredientRepo = ingredientRepo;
+        this.saleRepo = saleRepo;
+        this.recipeRepo = recipeRepo;
+        this.stockIngredientRepo = stockIngredientRepo;
+    }
 
     @Override
     public void createMovement(StockMovementDTO dto) {
@@ -39,7 +52,6 @@ public class StockMovementServiceImpl implements StockMovementService {
 
         stockMovementRepo.save(movement);
 
-        // actualizar stock actual
         StockIngredient stock = stockIngredientRepo
                 .findByIngredient_Id(ingredient.getId())
                 .orElseThrow();
@@ -59,7 +71,6 @@ public class StockMovementServiceImpl implements StockMovementService {
             Long productId = line.getProduct().getId();
             int quantitySold = line.getQuantity();
 
-            // obtener receta del producto
             List<Recipe> recipes = recipeRepo.findByProductId(productId);
 
             for (Recipe recipe : recipes) {
@@ -68,7 +79,7 @@ public class StockMovementServiceImpl implements StockMovementService {
 
                 StockMovementDTO dto = new StockMovementDTO();
                 dto.setIngredientId(recipe.getIngredient().getId());
-                dto.setQuantity(-totalConsumption); //  negativo = consumo
+                dto.setQuantity(-totalConsumption);
                 dto.setType(MovementType.SALE);
                 dto.setSaleId(saleId);
 

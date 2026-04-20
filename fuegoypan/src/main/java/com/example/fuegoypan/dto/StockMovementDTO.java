@@ -9,6 +9,16 @@ public class StockMovementDTO {
     private MovementType type;
     private Long saleId;
 
+    public StockMovementDTO() {
+    }
+
+    public StockMovementDTO(Long ingredientId, Double quantity, MovementType type, Long saleId) {
+        this.ingredientId = ingredientId;
+        this.quantity = quantity;
+        this.type = type;
+        this.saleId = saleId;
+    }
+
     // getters/setters
 
 

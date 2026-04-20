@@ -2,16 +2,19 @@ package com.example.fuegoypan.controller;
 
 import com.example.fuegoypan.dto.StockMovementDTO;
 import com.example.fuegoypan.service.StockMovementService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/stock-movements")
-@RequiredArgsConstructor
 public class StockMovementController {
 
     private final StockMovementService stockMovementService;
+
+    // Constructor manual en lugar de @RequiredArgsConstructor
+    public StockMovementController(StockMovementService stockMovementService) {
+        this.stockMovementService = stockMovementService;
+    }
 
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody StockMovementDTO dto) {
@@ -19,7 +22,6 @@ public class StockMovementController {
         return ResponseEntity.ok().build();
     }
 
-    // endpoint clave para ventas
     @PostMapping("/sale/{saleId}")
     public ResponseEntity<Void> processSale(@PathVariable Long saleId) {
         stockMovementService.registerSaleConsumption(saleId);

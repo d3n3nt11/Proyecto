@@ -27,6 +27,18 @@ public class StockMovement {
     @JoinColumn(name = "sale_id")
     private Sale sale;
 
+    public StockMovement(Double quantity, Ingredient ingredient, MovementType type, LocalDateTime createdAt, Sale sale) {
+        this.quantity = quantity;
+        this.ingredient = ingredient;
+        this.type = type;
+        this.createdAt = createdAt;
+        this.sale = sale;
+    }
+
+    public StockMovement() {
+
+    }
+
     // getters/setters
     public Long getId() {
         return id;
