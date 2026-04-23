@@ -2,6 +2,7 @@
     //  Lo que devuelve el login/register
     export interface IAuthResponse {
     token: string;
+    role: string;
     }
 
     //  Lo que enviamos al hacer login

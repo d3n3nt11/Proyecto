@@ -26,6 +26,7 @@ export default function Login() {
 
       // Si llegamos aquí, el login fue exitoso
       localStorage.setItem("token", response.token);
+      localStorage.setItem("userRole",response.role);
       navigate("/burger");  // Solo redirigimos si todo fue bien
       
     } catch (err: any) {

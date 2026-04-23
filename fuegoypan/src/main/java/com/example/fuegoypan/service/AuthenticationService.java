@@ -37,7 +37,7 @@ public class AuthenticationService {
         // Genera JWT
         String jwtToken = jwtService.generateToken(user);
 
-        return new AuthenticationResponse(jwtToken);
+        return new AuthenticationResponse(jwtToken, user.getRole().name());
     }
 
     // Login
@@ -57,6 +57,6 @@ public class AuthenticationService {
         // Genera JWT
         String jwtToken = jwtService.generateToken(user);
 
-        return new AuthenticationResponse(jwtToken);
+        return new AuthenticationResponse(jwtToken, user.getRole().name());// pasamos tambien el role del usuario
     }
 }

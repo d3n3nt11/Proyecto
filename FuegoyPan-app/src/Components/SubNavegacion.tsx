@@ -4,12 +4,14 @@ export default function SubNavegacion() {
     const navigate = useNavigate()
     const location = useLocation()
 
+    const userRole = localStorage.getItem("userRole");
+    const esGerente = userRole === "GERENTE";
     // Home activo en páginas de comida
     const rutasHome = ['/burger', '/bebidas', '/postre', '/salsas']
 
     const botones = [
         { id: 'home', texto: 'Home', ruta: '/burger' }, 
-        { id: 'ajustes', texto: 'Ajustes', ruta: '/ajustes' },
+        ...(esGerente ? [{ id: 'ajustes', texto: 'Ajustes', ruta: '/ajustes' }] : []),
         { id: 'informes', texto: 'Informes', ruta: '/informes' },
         { id: 'perfil', texto: 'Perfil', ruta: '/perfil' },
         { id: 'comprar', texto: 'Comprar', ruta: '/comprar' },
