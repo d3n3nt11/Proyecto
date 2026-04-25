@@ -47,28 +47,27 @@ export default function Comprar() {
   return (
     <div className="bg-[#F2E9DB] min-h-screen flex flex-col items-center py-10">
       <img src="src/assets/logo.png" className="w-75 h-45 rounded-full" />
-
       <h1 className="text-2xl text-white font-bold mb-4">
         ¿Listo para comprar?
       </h1>
-
       <div className="bg-white rounded-2xl shadow-lg p-5 w-100">
-
+        <p className="text-black font-bold text-xl text-center">Tu pedido</p>
         {cart.length === 0 && (
           <p className="text-center text-gray-500">
             El carrito está vacío
           </p>
         )}
-
         {cart.map(item => (
           <div key={item.id} className="flex justify-between border-b py-2">
-            <div>
-              <p className="font-bold">{item.name}</p>
-              <p className="text-sm">
-                {item.quantity} x {item.price}€
-              </p>
+            <div className="flex gap-2">
+              <img src={item.imageUrl} alt={item.name} className="w-16 h-16 object-cover rounded-full" />
+              <div>
+                <p className="font-bold">{item.name}</p>
+                <p className="text-sm">
+                  {item.quantity} x {item.price}€
+                </p>
+              </div>
             </div>
-
             <button
               onClick={() => removeFromCart(item.id)}
               className="text-red-500"
@@ -88,7 +87,7 @@ export default function Comprar() {
               onClick={handleCheckout}
               className="w-full bg-red-600 text-white py-2 mt-4 rounded-xl"
             >
-              Pagar
+              Listo para Pagar
             </button>
           </>
         )}

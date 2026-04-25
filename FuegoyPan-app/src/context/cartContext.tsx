@@ -26,7 +26,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // ➕ añadir producto
+  // añadir producto
   const addToCart = (product: IProducto) => {
     setCart(prev => {
       const exists = prev.find(p => p.id === product.id);
