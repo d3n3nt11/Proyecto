@@ -16,4 +16,6 @@ public interface StockIngredientService {
     List<StockAlertDTO> getIngredientsBelowMin(); // Para alertas de stock mínimo
 
     List<StockIngredientDTO> getIngredientsExpired(); // Para alertas de caducidad
+
+    StockIngredientDTO updateMinStock(Long ingredientId, Double minStock);
 }

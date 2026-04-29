@@ -46,4 +46,11 @@ public class StockIngredientController {
     public ResponseEntity<List<StockIngredientDTO>> getExpired() {
         return ResponseEntity.ok(stockService.getIngredientsExpired());
     }
+    @PatchMapping("/{id}/min-stock")
+    public ResponseEntity<StockIngredientDTO> updateMinStock(
+            @PathVariable Long id,
+            @RequestParam Double minStock) {
+
+        return ResponseEntity.ok(stockService.updateMinStock(id, minStock));
+    }
 }

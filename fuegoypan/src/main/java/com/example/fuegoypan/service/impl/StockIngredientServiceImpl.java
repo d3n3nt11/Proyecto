@@ -73,6 +73,17 @@ public class StockIngredientServiceImpl implements StockIngredientService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public StockIngredientDTO updateMinStock(Long ingredientId, Double minStock) {
+        StockIngredient stock = stockRepo.findById(ingredientId)
+                .orElseThrow(() -> new RuntimeException("Stock no encontrado"));
+
+        stock.setMinStock(minStock);
+        StockIngredient saved = stockRepo.save(stock);
+
+        return mapToDTO(saved); // Usa el metodo interno de mapeo o crea uno nuevo
+    }
+
     private StockIngredientDTO mapToDTO(StockIngredient stock) {
         StockIngredientDTO dto = new StockIngredientDTO();
         dto.setIngredientId(stock.getIngredient().getId());

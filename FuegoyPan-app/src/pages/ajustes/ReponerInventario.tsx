@@ -22,7 +22,6 @@ export default function ReponerInventario() {
                 data.forEach((ingredient) => {
                     stockInicial[ingredient.ingredientId] = ingredient.currentStock;
                 });
-
                 setStockLocal(stockInicial);
             } catch (error) {
                 console.error("Error:", error);
@@ -30,7 +29,6 @@ export default function ReponerInventario() {
                 setLoading(false);
             }
         };
-
         cargarIngredientes();
     }, []);
 
@@ -41,32 +39,26 @@ export default function ReponerInventario() {
             const filtrados = ingredients.filter((i) =>
                 i.ingredientName.toLowerCase().includes(search.toLowerCase())
             );
-
             setFilteredIngredients(filtrados);
         }
     }, [search, ingredients]);
 
     const aumentarStock = (id: number) => {
         const nuevoValor = (stockLocal[id] || 0) + 1;
-
         setStockLocal((prev) => ({
             ...prev,
             [id]: nuevoValor,
         }));
-
         reponerInvenatario(id, nuevoValor);
     };
 
     const disminuirStock = (id: number) => {
         const nuevoValor = (stockLocal[id] || 0) - 1;
-
         if (nuevoValor < 0) return;
-
         setStockLocal((prev) => ({
             ...prev,
             [id]: nuevoValor,
         }));
-
         reponerInvenatario(id, nuevoValor);
     };
 

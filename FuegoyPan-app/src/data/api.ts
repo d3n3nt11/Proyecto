@@ -45,7 +45,7 @@ export function login(data: { name: string; password: string }) {
 }
 
 export async function getIngredientes(): Promise<IIngredient[]> {
-     if (USAR_DATOS_LOCALES) {
+    if (USAR_DATOS_LOCALES) {
         console.log("Usando datos locales");
         return ingredientesList;
     }
@@ -104,6 +104,14 @@ export function reponerInvenatario(ingredienteId: number, nuevoStock: number) {
         }
     );
 }
+export function modificarInventario(ingredienteId: number, nuevoPorcentaje: number) {
+    return peticionApi(
+        `${BASE_URL}/stock/${ingredienteId}/min-stock?minStock=${nuevoPorcentaje}`,
+        {
+            method: "PATCH",
+        }
+    );
+}
 
 //reportes
 export async function descargarInformeCSV(start: string, end: string) {
@@ -123,15 +131,14 @@ export async function descargarInformeCSV(start: string, end: string) {
         throw new Error("Error al descargar el informe");
     }
 
-    return response.blob(); // IMPORTANTE
+    return response.blob(); 
 }
 
 export async function descargarStockMovements(start: string, end: string) {
 
     const token = localStorage.getItem("token");
 
-    const response = await fetch(
-         `${BASE_URL}/reports/stock-movements/csv?start=${start}&end=${end}`,
+    const response = await fetch(`${BASE_URL}/reports/stock-movements/csv?start=${start}&end=${end}`,
         {
             method: "GET",
             headers: {
