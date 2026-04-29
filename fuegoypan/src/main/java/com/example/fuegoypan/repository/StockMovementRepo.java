@@ -1,5 +1,6 @@
 package com.example.fuegoypan.repository;
 
+import com.example.fuegoypan.model.MovementType;
 import com.example.fuegoypan.model.StockMovement;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,5 @@ public interface StockMovementRepo extends JpaRepository<StockMovement, Long> {
             LocalDateTime end
     );
 
+    boolean existsBySale_IdAndType(Long saleId, MovementType type);
 }

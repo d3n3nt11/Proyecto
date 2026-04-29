@@ -51,16 +51,12 @@ public class SaleServiceImpl implements SaleService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
-        // Crear venta
         Sale sale = new Sale();
         sale.setUser(user);
-        sale.setStatus(
-                dto.getStatus() != null ? dto.getStatus() : SaleStatus.OPEN
-        );
+        sale.setStatus(dto.getStatus() != null ? dto.getStatus() : SaleStatus.OPEN);
 
         List<SaleLine> lines = new ArrayList<>();
 
-        // Procesar líneas
         for (SaleLineCreateDTO lineDTO : dto.getLines()) {
 
             Product product = productRepo.findById(lineDTO.getProductId())
@@ -72,7 +68,7 @@ public class SaleServiceImpl implements SaleService {
             line.setQuantity(lineDTO.getQuantity());
             line.setUnitPrice(product.getPrice());
 
-            // Validar y descontar stock
+            //  SOLO VALIDACIÓN (NO DESCUENTA STOCK)
             if (product.getRecipeItems() != null) {
 
                 product.getRecipeItems().forEach(recipe -> {
@@ -82,17 +78,14 @@ public class SaleServiceImpl implements SaleService {
                     ).orElseThrow(() -> new ResponseStatusException(
                             HttpStatus.NOT_FOUND, "Stock del ingrediente no encontrado"));
 
-                    double used = recipe.getQuantity() * lineDTO.getQuantity();
+                    double needed = recipe.getQuantity() * lineDTO.getQuantity();
 
-                    if (stock.getCurrentStock() < used) {
+                    if (stock.getCurrentStock() < needed) {
                         throw new ResponseStatusException(
                                 HttpStatus.BAD_REQUEST,
                                 "Stock insuficiente para: " + recipe.getIngredient().getName()
                         );
                     }
-
-                    stock.setCurrentStock(stock.getCurrentStock() - used);
-                    stockRepo.save(stock);
                 });
             }
 
@@ -102,19 +95,59 @@ public class SaleServiceImpl implements SaleService {
 
         sale.setLines(lines);
 
-        // Calcular total
         double total = lines.stream()
                 .mapToDouble(l -> l.getQuantity() * l.getUnitPrice())
                 .sum();
 
         sale.setTotal(total);
 
-        // Guardar
         Sale saved = saleRepo.save(sale);
-        stockMovementService.registerSaleConsumption(sale.getId());
 
         return mapToDTO(saved);
     }
+
+
+    // UPDATE STATUS, AQUÍ SE DESCUENTA
+    @Transactional
+    @Override
+    public SaleDTO updateStatus(Long id, String status) {
+
+        Sale sale = saleRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Venta no encontrada"));
+
+        SaleStatus oldStatus = sale.getStatus();
+        SaleStatus newStatus = SaleStatus.valueOf(status);
+
+        sale.setStatus(newStatus);
+
+        Sale saved = saleRepo.save(sale);
+
+
+        if (oldStatus != SaleStatus.PAID && newStatus == SaleStatus.PAID) {
+            stockMovementService.registerSaleConsumption(saved.getId());
+        }
+
+        return mapToDTO(saved);
+    }
+
+    @Transactional
+    @Override
+    public SaleDTO cancelSale(Long id) {
+
+        Sale sale = saleRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Venta no encontrada"));
+
+        if (sale.getStatus() == SaleStatus.CANCELLED) {
+            return mapToDTO(sale);
+        }
+
+        sale.setStatus(SaleStatus.CANCELLED);
+
+        return mapToDTO(saleRepo.save(sale));
+    }
+
 
     @Override
     public List<SaleDTO> getAll() {
@@ -132,58 +165,9 @@ public class SaleServiceImpl implements SaleService {
                         HttpStatus.NOT_FOUND, "Venta no encontrada"));
     }
 
-    @Transactional
-    @Override
-    public SaleDTO updateStatus(Long id, String status) {
-        Sale sale = saleRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Venta no encontrada"));
 
-        sale.setStatus(SaleStatus.valueOf(status));
-
-        return mapToDTO(saleRepo.save(sale));
-    }
-
-    @Transactional
-    @Override
-    public SaleDTO cancelSale(Long id) {
-        Sale sale = saleRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Venta no encontrada"));
-
-        if ("CANCELLED".equals(sale.getStatus().name())) {
-            return mapToDTO(sale);
-        }
-
-        // Devolver stock
-        for (SaleLine line : sale.getLines()) {
-
-            Product product = line.getProduct();
-
-            if (product.getRecipeItems() != null) {
-
-                product.getRecipeItems().forEach(recipe -> {
-
-                    StockIngredient stock = stockRepo.findById(
-                            recipe.getIngredient().getId()
-                    ).orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.NOT_FOUND, "Stock no encontrado"));
-
-                    double used = recipe.getQuantity() * line.getQuantity();
-
-                    stock.setCurrentStock(stock.getCurrentStock() + used);
-                    stockRepo.save(stock);
-                });
-            }
-        }
-
-        sale.setStatus(SaleStatus.CANCELLED);
-
-        return mapToDTO(saleRepo.save(sale));
-    }
-
-    // Mapeo a DTO
     private SaleDTO mapToDTO(Sale sale) {
+
         SaleDTO dto = new SaleDTO();
         dto.setId(sale.getId());
         dto.setDate(sale.getDate());

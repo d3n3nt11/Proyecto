@@ -18,7 +18,6 @@ public class StockMovementServiceImpl implements StockMovementService {
     private final RecipeRepo recipeRepo;
     private final StockIngredientRepo stockIngredientRepo;
 
-    // Constructor manual
     public StockMovementServiceImpl(
             StockMovementRepo stockMovementRepo,
             IngredientRepo ingredientRepo,
@@ -33,10 +32,15 @@ public class StockMovementServiceImpl implements StockMovementService {
         this.stockIngredientRepo = stockIngredientRepo;
     }
 
+
     @Override
     public void createMovement(StockMovementDTO dto) {
 
         Ingredient ingredient = ingredientRepo.findById(dto.getIngredientId())
+                .orElseThrow();
+
+        StockIngredient stock = stockIngredientRepo
+                .findByIngredient_Id(ingredient.getId())
                 .orElseThrow();
 
         StockMovement movement = new StockMovement();
@@ -46,25 +50,40 @@ public class StockMovementServiceImpl implements StockMovementService {
         movement.setCreatedAt(LocalDateTime.now());
 
         if (dto.getSaleId() != null) {
-            Sale sale = saleRepo.findById(dto.getSaleId()).orElseThrow();
+            Sale sale = saleRepo.findById(dto.getSaleId())
+                    .orElseThrow();
             movement.setSale(sale);
         }
 
         stockMovementRepo.save(movement);
-
-        StockIngredient stock = stockIngredientRepo
-                .findByIngredient_Id(ingredient.getId())
-                .orElseThrow();
-
         stock.setCurrentStock(stock.getCurrentStock() + dto.getQuantity());
 
         stockIngredientRepo.save(stock);
     }
 
+
+    // CONSUMO POR VENTA
     @Override
     public void registerSaleConsumption(Long saleId) {
 
-        Sale sale = saleRepo.findById(saleId).orElseThrow();
+        Sale sale = saleRepo.findById(saleId)
+                .orElseThrow();
+
+        // solo si está PAID
+        if (sale.getStatus() != SaleStatus.PAID) {
+            throw new IllegalStateException("La venta no está en pagada");
+        }
+
+        //  ANTI-DUPLICADO
+        boolean alreadyProcessed =
+                stockMovementRepo.existsBySale_IdAndType(
+                        saleId,
+                        MovementType.SALE
+                );
+
+        if (alreadyProcessed) {
+            return;
+        }
 
         for (SaleLine line : sale.getLines()) {
 
@@ -75,7 +94,8 @@ public class StockMovementServiceImpl implements StockMovementService {
 
             for (Recipe recipe : recipes) {
 
-                double totalConsumption = recipe.getQuantity() * quantitySold;
+                double totalConsumption =
+                        recipe.getQuantity() * quantitySold;
 
                 StockMovementDTO dto = new StockMovementDTO();
                 dto.setIngredientId(recipe.getIngredient().getId());
