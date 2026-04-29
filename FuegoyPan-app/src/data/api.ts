@@ -95,6 +95,12 @@ export function getMe() {
     return peticionApi(`${BASE_URL}/users/me`);
 }
 
+export function reponerInvenatario(ingredienteId: number, nuevoStock: number) {
+    return peticionApi(`${BASE_URL}/stock/${ingredienteId}?newStock=${nuevoStock}&checkMin=false`, {
+        method: "POST", 
+    });
+}
+
 //reportes
 export async function descargarInformeCSV(start: string, end: string) {
     const token = localStorage.getItem("token");
