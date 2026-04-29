@@ -3,7 +3,7 @@ import { productosList } from "./data";
 import { ingredientesList } from "./dataIngredientes";
 
 // CAMBIA ESTO A false CUANDO TENGAS LA API LISTA
-const USAR_DATOS_LOCALES = false;
+const USAR_DATOS_LOCALES = true;
 
 const BASE_URL = "http://localhost:8081/api";
 
@@ -45,6 +45,10 @@ export function login(data: { name: string; password: string }) {
 }
 
 export async function getIngredientes(): Promise<IIngredient[]> {
+     if (USAR_DATOS_LOCALES) {
+        console.log("Usando datos locales");
+        return ingredientesList;
+    }
     return peticionApi(`${BASE_URL}/stock`);
 }
 
