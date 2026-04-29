@@ -5,7 +5,7 @@ public class IngredientDTO {
 
     private Long id;
     private String name;
-    private String unit; // ej: kg, g, litros, unidades
+    private String unit;
 
     public IngredientDTO(Long id, String unit, String name) {
         this.id = id;

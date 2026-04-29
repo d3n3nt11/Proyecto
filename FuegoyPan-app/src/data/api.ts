@@ -1,9 +1,9 @@
-import type { IIngrediente, IProducto } from "../types/Interfaces";
+import type { IIngredient, IProducto } from "../types/Interfaces";
 import { productosList } from "./data";
 import { ingredientesList } from "./dataIngredientes";
 
 // CAMBIA ESTO A false CUANDO TENGAS LA API LISTA
-const USAR_DATOS_LOCALES = true;
+const USAR_DATOS_LOCALES = false;
 
 const BASE_URL = "http://localhost:8081/api";
 
@@ -44,13 +44,10 @@ export function login(data: { name: string; password: string }) {
     });
 }
 
-export async function getIngredientes(): Promise<IIngrediente[]> {
-    if (USAR_DATOS_LOCALES) {
-        console.log("Usando datos locales de ingredientes");
-        return ingredientesList; // Aquí deberías devolver una lista de ingredientes, no productos
-    }
-    return peticionApi(`${BASE_URL}/ingredients`);
+export async function getIngredientes(): Promise<IIngredient[]> {
+    return peticionApi(`${BASE_URL}/stock`);
 }
+
 // FUNCIONES DE PRODUCTOS
 export async function getAllProductos(): Promise<IProducto[]> {
     if (USAR_DATOS_LOCALES) {
@@ -96,9 +93,12 @@ export function getMe() {
 }
 
 export function reponerInvenatario(ingredienteId: number, nuevoStock: number) {
-    return peticionApi(`${BASE_URL}/stock/${ingredienteId}?newStock=${nuevoStock}&checkMin=false`, {
-        method: "POST", 
-    });
+    return peticionApi(
+        `${BASE_URL}/stock/${ingredienteId}?newStock=${nuevoStock}&checkMin=false`,
+        {
+            method: "PUT",
+        }
+    );
 }
 
 //reportes
