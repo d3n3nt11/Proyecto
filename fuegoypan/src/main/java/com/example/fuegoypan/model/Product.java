@@ -15,73 +15,53 @@ public class Product {
     private Long id;
 
     private String name;
-
     private Double price;
-
     private String description;
-
     private Boolean visible;
+
+    @Enumerated(EnumType.STRING)
+    private Category category;
+    private String imageUrl;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Recipe> recipeItems = new ArrayList<>();
 
+    public Product(Long id, String name, Double price, String description, Boolean visible, Category category, String imageUrl) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.visible = visible;
+        this.category = category;
+        this.imageUrl = imageUrl;
+    }
+
     public Product() {
     }
 
-    public Product(Long id, String name, Double price, String description, List<Recipe> recipeItems, Boolean visible) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.description = description;
-        this.recipeItems = recipeItems;
-        this.visible = visible;
-    }
 
-    public Long getId() {
-        return id;
-    }
+    // Getters y Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getName() {
-        return name;
-    }
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public Double getPrice() {
-        return price;
-    }
+    public Boolean getVisible() { return visible; }
+    public void setVisible(Boolean visible) { this.visible = visible; }
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean getVisible() {
-        return visible;
-    }
-
-    public void setVisible(Boolean visible) {
-        this.visible = visible;
-    }
-
-    public List<Recipe> getRecipeItems() {
-        return recipeItems;
-    }
-
-    public void setRecipeItems(List<Recipe> recipeItems) {
-        this.recipeItems = recipeItems;
-    }
+    public List<Recipe> getRecipeItems() { return recipeItems; }
+    public void setRecipeItems(List<Recipe> recipeItems) { this.recipeItems = recipeItems; }
 }

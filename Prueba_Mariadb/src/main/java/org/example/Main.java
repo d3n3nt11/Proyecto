@@ -9,10 +9,10 @@ import java.sql.SQLException;
 public class Main {
 
     // Configuración
-    private static final String HOST = "serverless-europe-west2.sysp0000.db2.skysql.com";
-    private static final String PORT = "4086";
-    private static final String USER = "dbpgf40733334";
-    private static final String PASSWORD = "gvUXCh7USAaJt4FOk@Hymbrc9";
+    private static final String HOST = "serverless-europe-west3.sysp0000.db2.skysql.com";
+    private static final String PORT = "4068";
+    private static final String USER = "dbpgf14695271";
+    private static final String PASSWORD = "tLlTOXnUs2SFtWgV30q8V]Rh";
     private static final String DB_NAME = "FuegoyPan";
 
     public static void main(String[] args) {
