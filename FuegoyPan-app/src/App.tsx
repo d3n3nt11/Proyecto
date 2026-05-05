@@ -13,6 +13,8 @@ import ConfigurarInventario from "./pages/ajustes/ConfigurarInventario"
 import ReponerInventario from "./pages/ajustes/ReponerInventario"
 import VerInventario from "./pages/ajustes/VerInventario"
 import Pago from "./pages/Pago"
+import Success from "./pages/Succes"
+import Cancel from "./pages/Cancel"
 function App() {
   return (
     <>
@@ -27,6 +29,8 @@ function App() {
         <Route path="/informes" element={<Informes/>}/>
         <Route path="/comprar" element={<Comprar/>}/>
         <Route path="/pago" element={<Pago />} />
+        <Route path="/success" element={<Success/>} />
+        <Route path="/cancel" element={<Cancel/>} />
         <Route path="/perfil" element={<Perfil/>}/>
         <Route path="/ajustes/VerInventario" element={<VerInventario/>}/>
         <Route path="/ajustes/ReponerInventario" element={<ReponerInventario/>}/>

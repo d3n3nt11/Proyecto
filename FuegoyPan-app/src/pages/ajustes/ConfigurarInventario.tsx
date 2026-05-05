@@ -82,7 +82,7 @@ export default function ConfigurarInventario() {
           {filteredIngredients.map((ingredient) => (
             <div key={ingredient.ingredientId} className="bg-white rounded-2xl shadow-lg p-3 flex flex-row items-center justify-between gap-3 mb-4">
               <img
-                src={ingredient.imageUrl}
+                src={ingredient.image}
                 alt={ingredient.ingredientName}
                 className="rounded-lg h-16 w-16 object-cover"/>
               <h3 className="font-semibold text-base text-gray-800 flex-1">

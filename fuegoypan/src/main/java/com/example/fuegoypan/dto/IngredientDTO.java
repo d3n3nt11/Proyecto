@@ -6,11 +6,13 @@ public class IngredientDTO {
     private Long id;
     private String name;
     private String unit;
+    private String image;
 
-    public IngredientDTO(Long id, String unit, String name) {
+    public IngredientDTO(Long id, String unit, String name, String image) {
         this.id = id;
         this.unit = unit;
         this.name = name;
+        this.image = image;
     }
 
     public IngredientDTO() {
@@ -39,5 +41,13 @@ public class IngredientDTO {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

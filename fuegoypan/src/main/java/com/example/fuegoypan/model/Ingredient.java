@@ -14,6 +14,9 @@ public class Ingredient {
 
     private String unit; // kg, g, unidades, litros...
 
+    @Column(name = "image")
+    private String image;
+
     @OneToOne(mappedBy = "ingredient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private StockIngredient stock;
 
@@ -48,6 +51,14 @@ public class Ingredient {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public StockIngredient getStock() {

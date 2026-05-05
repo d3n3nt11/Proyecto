@@ -34,6 +34,9 @@ public class Sale {
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SaleLine> lines = new ArrayList<>();
 
+    @Column(name = "stripe_session_id")
+    private String stripeSessionId;
+
 
     // CONSTRUCTORES
 
@@ -98,5 +101,13 @@ public class Sale {
 
     public void setLines(List<SaleLine> lines) {
         this.lines = lines;
+    }
+
+    public String getStripeSessionId() {
+        return stripeSessionId;
+    }
+
+    public void setStripeSessionId(String stripeSessionId) {
+        this.stripeSessionId = stripeSessionId;
     }
 }

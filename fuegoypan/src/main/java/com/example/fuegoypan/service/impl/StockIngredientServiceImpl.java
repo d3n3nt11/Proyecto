@@ -92,6 +92,7 @@ public class StockIngredientServiceImpl implements StockIngredientService {
         dto.setMinStock(stock.getMinStock());
         dto.setExpirationDate(stock.getExpirationDate());
         dto.setUnit(stock.getIngredient().getUnit());
+        dto.setImage(stock.getIngredient().getImage());
         return dto;
     }
 }

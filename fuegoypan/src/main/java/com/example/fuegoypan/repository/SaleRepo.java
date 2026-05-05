@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SaleRepo extends JpaRepository<Sale, Long> {
@@ -16,4 +17,6 @@ public interface SaleRepo extends JpaRepository<Sale, Long> {
     WHERE s.date BETWEEN :start AND :end
     """)
     List<Sale> findSalesBetween(LocalDateTime start, LocalDateTime end);
+
+    Optional<Sale> findByStripeSessionId(String sessionId);
 }

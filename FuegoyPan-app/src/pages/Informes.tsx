@@ -1,18 +1,31 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import SubNavegacion from '../Components/SubNavegacion'
 import { descargarInformeCSV, descargarStockMovements } from '../data/api';
-
 
 export default function Informes() {
 
     const [loading, setLoading] = useState(false);
 
+    //  Calcula el mes actual automáticamente
+    const getCurrentMonthRange = () => {
+        const now = new Date();
+
+        const start = new Date(now.getFullYear(), now.getMonth(), 1);
+        const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+        const format = (date: Date) => date.toISOString().split("T")[0];
+
+        return {
+            start: format(start),
+            end: format(end),
+        };
+    };
+
     const handleDownload = async () => {
         try {
             setLoading(true);
 
-            const start = "2026-04-01";
-            const end = "2026-04-30";
+            const { start, end } = getCurrentMonthRange();
 
             const blob = await descargarInformeCSV(start, end);
 
@@ -33,6 +46,27 @@ export default function Informes() {
         }
     };
 
+    const handleStockDownload = async () => {
+        try {
+            const { start, end } = getCurrentMonthRange();
+
+            const blob = await descargarStockMovements(start, end);
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = "stock_movements.csv";
+            a.click();
+
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error(error);
+            alert("Error al generar el informe de stock");
+        }
+    };
+
     return (
         <div className="bg-[#F2E9DB] min-h-screen flex flex-col items-center py-10">
 
@@ -48,6 +82,7 @@ export default function Informes() {
 
             <div className="flex flex-col items-center gap-4 w-full max-w-md px-4">
 
+                {/* 📊 Ventas */}
                 <button
                     onClick={handleDownload}
                     disabled={loading}
@@ -57,24 +92,15 @@ export default function Informes() {
                     {loading ? "Generando informe..." : "Descargar informe de ventas"}
                 </button>
 
-               <button
-                onClick={async () => {
-                    const blob = await descargarStockMovements("2026-04-01", "2026-04-30");
+                {/* 📦 Stock */}
+                <button
+                    onClick={handleStockDownload}
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full w-full"
+                >
+                    Descargar movimientos de stock
+                </button>
 
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-
-                    a.href = url;
-                    a.download = "stock_movements.csv";
-                    a.click();
-
-                    window.URL.revokeObjectURL(url);
-                }}
-                className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full w-full"
-            >
-                Descargar movimientos de stock
-            </button>
-
+                {/* 🍽️ Placeholder */}
                 <button
                     type="button"
                     className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full w-full"
@@ -85,7 +111,7 @@ export default function Informes() {
 
             </div>
 
-            <SubNavegacion/>
+            <SubNavegacion />
         </div>
     )
 }

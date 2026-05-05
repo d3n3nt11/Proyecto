@@ -34,3 +34,9 @@ export function cancelSale(id: number) {
     method: "PATCH",
   });
 }
+
+export function paySale(id: number) {
+  return peticionApi(`${BASE_URL}/${id}/pay`, {
+    method: "POST",
+  });
+}

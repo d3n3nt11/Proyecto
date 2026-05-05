@@ -27,6 +27,7 @@ public class IngredientServiceImpl implements IngredientService {
         Ingredient ingredient = new Ingredient();
         ingredient.setName(dto.getName());
         ingredient.setUnit(dto.getUnit());
+        ingredient.setImage(dto.getImage());
 
         Ingredient saved = ingredientRepo.save(ingredient);
         return mapToDTO(saved);
@@ -39,6 +40,7 @@ public class IngredientServiceImpl implements IngredientService {
 
         ingredient.setName(dto.getName());
         ingredient.setUnit(dto.getUnit());
+        ingredient.setImage(dto.getImage());
 
         Ingredient saved = ingredientRepo.save(ingredient);
         return mapToDTO(saved);
@@ -65,6 +67,7 @@ public class IngredientServiceImpl implements IngredientService {
         dto.setId(ingredient.getId());
         dto.setName(ingredient.getName());
         dto.setUnit(ingredient.getUnit());
+        dto.setImage(ingredient.getImage());
         return dto;
     }
 }

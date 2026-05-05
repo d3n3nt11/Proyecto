@@ -43,5 +43,5 @@
         minStock: number;
         expirationDate?: string;
         unit?: string;
-        imageUrl?: string;
+        image?: string;
     }

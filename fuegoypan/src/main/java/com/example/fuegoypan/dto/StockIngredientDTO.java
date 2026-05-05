@@ -12,17 +12,19 @@ public class StockIngredientDTO {
     private Double minStock;
     private LocalDate expirationDate;
     private String unit;
+    private String image;
 
     public StockIngredientDTO() {
     }
 
-    public StockIngredientDTO(Long ingredientId, Double maxStock, String ingredientName, Double minStock, LocalDate expirationDate,String unit) {
+    public StockIngredientDTO(Long ingredientId, Double maxStock, String ingredientName, Double minStock, LocalDate expirationDate,String unit, String image) {
         this.ingredientId = ingredientId;
         this.currentStock = maxStock;
         this.ingredientName = ingredientName;
         this.minStock = minStock;
         this.expirationDate = expirationDate;
         this.unit = unit;
+        this.image = image;
     }
 
     public Long getIngredientId() {
@@ -71,5 +73,13 @@ public class StockIngredientDTO {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
