@@ -67,13 +67,14 @@ export default function Postre() {
             <MenuCategoria />
             {loading && <p className="text-gray-600 mt-4">Cargando...</p>}
             {!loading && (
-                <div className="grid grid-cols-4 gap-5 p-4 mt-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4 mt-5 w-full max-w-7xl mx-auto">
                     {filteredPostres.map((producto) => (
+                    <div key={`${uid}-${producto.id}`} className="min-w-0">
                         <CardFood
-                            key={`${uid}-${producto.id}`}
                             data={producto}
-                            onAdd={(p) => addToCart(p)} // Aquí se añade al carrito
+                            onAdd={(p) => addToCart(p)}
                         />
+                    </div>
                     ))}
                 </div>
             )}

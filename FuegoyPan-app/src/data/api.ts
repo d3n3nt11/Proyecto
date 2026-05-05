@@ -5,7 +5,7 @@ import { ingredientesList } from "./dataIngredientes";
 // CAMBIA ESTO A false CUANDO TENGAS LA API LISTA
 const USAR_DATOS_LOCALES = false;
 
-const BASE_URL = "http://localhost:8081/api";
+const BASE_URL = "http://192.168.1.45:8081/api";
 
 export async function peticionApi(url: string, options?: any) {
     try {

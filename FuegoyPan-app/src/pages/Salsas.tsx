@@ -96,13 +96,14 @@ export default function Salsas() {
             
             {/* Grid de productos: solo se muestra cuando terminó de cargar */}
             {!loading && (
-                <div className="grid grid-cols-4 gap-5 p-4 mt-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4 mt-5 w-full max-w-7xl mx-auto">
                     {filteredSalsas.map((producto) => (
+                    <div key={`${uid}-${producto.id}`} className="min-w-0">
                         <CardFood
-                            key={`${uid}-${producto.id}`}  // Key única para React
-                            data={producto}  // Pasamos los datos del producto
-                            onAdd={(p) => addToCart(p)} // Aquí se añade al carrito
+                            data={producto}
+                            onAdd={(p) => addToCart(p)}
                         />
+                    </div>
                     ))}
                 </div>
             )}

@@ -5,13 +5,14 @@ export default function SubNavegacion() {
     const location = useLocation()
 
     const userRole = localStorage.getItem("userRole");
-    const esGerente = userRole === "GERENTE";
+    const verAjustes = userRole === "GERENTE" || userRole === "ADMIN";
+
     // Home activo en páginas de comida
     const rutasHome = ['/burger', '/bebidas', '/postre', '/salsas']
 
     const botones = [
         { id: 'home', texto: 'Home', ruta: '/burger' }, 
-        ...(esGerente ? [{ id: 'ajustes', texto: 'Ajustes', ruta: '/ajustes' }] : []),
+        ...(verAjustes ? [{ id: 'ajustes', texto: 'Ajustes', ruta: '/ajustes' }] : []),
         { id: 'informes', texto: 'Informes', ruta: '/informes' },
         { id: 'perfil', texto: 'Perfil', ruta: '/perfil' },
         { id: 'comprar', texto: 'Comprar', ruta: '/comprar' },
@@ -19,7 +20,7 @@ export default function SubNavegacion() {
 
     return (
         <nav className="fixed bottom-0 left-0 z-50 w-full h-16 bg-[#F2E9DB] border-t border-gray-300">
-            <div className="grid h-full max-w-5xl grid-cols-5 mx-auto font-medium gap-8">
+            <div className={`grid h-full max-w-5xl mx-auto font-medium gap-8 ${verAjustes ? 'grid-cols-5' : 'grid-cols-4'}`}>
                 
                 {botones.map((btn) => {
                     // Home activo en rutasHome, los demás solo en su ruta exacta
