@@ -9,6 +9,7 @@ import java.util.List;
 public class SaleDTO {
     private Long id;
     private LocalDateTime date;
+    private String userName;
     private Double total;
     private SaleStatus status;
     private Long userId;
@@ -24,6 +25,14 @@ public class SaleDTO {
         this.status = status;
         this.userId = userId;
         this.lines = lines;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Long getId() {

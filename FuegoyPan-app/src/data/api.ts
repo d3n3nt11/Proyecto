@@ -149,3 +149,16 @@ export async function descargarStockMovements(start: string, end: string) {
 
     return response.blob();
 }
+
+// Obtiene ventas en JSON para pintar en la app
+export function getVentasPorFechas(start: string, end: string) {
+    return peticionApi(`${BASE_URL}/reports/sales?start=${start}&end=${end}`);
+}
+// Obtiene el consumo de ingredientes en JSON para visualizar en la app
+export function getConsumoIngredientes(start: string, end: string) {
+    return peticionApi(`${BASE_URL}/reports/ingredientes-consumidos?start=${start}&end=${end}`);
+}
+// Obtiene movimientos de stock en JSON para visualizar en la app
+export function getStockMovementsPorFechas(start: string, end: string) {
+    return peticionApi(`${BASE_URL}/reports/stock-movimientos?start=${start}&end=${end}`);
+}

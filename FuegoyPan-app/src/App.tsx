@@ -15,6 +15,9 @@ import VerInventario from "./pages/ajustes/VerInventario"
 import Pago from "./pages/Pago"
 import Success from "./pages/Succes"
 import Cancel from "./pages/Cancel"
+import InformeStock from "./pages/InformeStock"
+import InformeVentas from "./pages/InformeVentas"
+import InformeConsumo from "./pages/InformeConsumo"
 function App() {
   return (
     <>
@@ -35,6 +38,9 @@ function App() {
         <Route path="/ajustes/VerInventario" element={<VerInventario/>}/>
         <Route path="/ajustes/ReponerInventario" element={<ReponerInventario/>}/>
         <Route path="/ajustes/ConfigurarPorcentaje" element={<ConfigurarInventario/>}/>
+        <Route path="/informes/ventas" element={<InformeVentas/>}/>
+        <Route path="/informes/stock" element={<InformeStock/>}/>
+        <Route path="/informes/consumo" element={<InformeConsumo/>}/>
       </Routes>
     </>
   )

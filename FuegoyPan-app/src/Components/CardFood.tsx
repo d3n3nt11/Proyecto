@@ -12,8 +12,7 @@ export default function CardFood({ data, onAdd }: CardFoodProps) {
     };
 
     return (
-        // 👇 Aumentamos la altura a 340px
-        <div className='bg-white rounded-2xl shadow-lg p-3 flex flex-col h-[340px] w-full cursor-pointer hover:shadow-xl hover:scale-105 transition-all duration-200 border-2 border-transparent hover:border-red-300 overflow-hidden'>
+        <div className='bg-white rounded-2xl shadow-lg p-3 flex flex-col h-84 w-full cursor-pointer hover:shadow-xl hover:scale-105 transition-all duration-200 border-2 border-transparent hover:border-red-300 overflow-hidden'>
             
             {/* Imagen - Altura fija */}
             <div className="w-full mb-3 flex-shrink-0">

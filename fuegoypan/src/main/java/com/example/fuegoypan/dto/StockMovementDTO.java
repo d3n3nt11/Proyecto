@@ -6,6 +6,8 @@ public class StockMovementDTO {
 
     private Long ingredientId;
     private Double quantity;
+    private String ingredientName;
+    private String unit;
     private MovementType type;
     private Long saleId;
 
@@ -21,6 +23,22 @@ public class StockMovementDTO {
 
     // getters/setters
 
+
+    public String getIngredientName() {
+        return ingredientName;
+    }
+
+    public void setIngredientName(String ingredientName) {
+        this.ingredientName = ingredientName;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 
     public Long getIngredientId() {
         return ingredientId;
