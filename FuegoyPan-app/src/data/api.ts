@@ -12,12 +12,12 @@ export async function peticionApi(url: string, options?: any) {
         const token = localStorage.getItem("token");
         
         const respuesta = await fetch(url, {
+            ...options,
             headers: {
                 "Content-Type": "application/json",
                 ...(token && { Authorization: `Bearer ${token}` }),
                 ...options?.headers,
             },
-            ...options,
         });
 
         if (!respuesta.ok) {
