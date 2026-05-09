@@ -36,7 +36,7 @@ public class StockIngredientServiceImpl implements StockIngredientService {
 
     @Override
     public List<StockIngredientDTO> getAllStock() {
-        return stockRepo.findAll().stream()
+        return stockRepo.findAllWithIngredient().stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }

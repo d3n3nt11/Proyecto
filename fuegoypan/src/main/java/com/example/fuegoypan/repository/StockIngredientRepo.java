@@ -24,4 +24,11 @@ public interface StockIngredientRepo extends JpaRepository<StockIngredient, Long
     WHERE s.currentStock <= s.minStock
     """)
     List<StockAlertDTO> findLowStock();
+
+    @Query("""
+SELECT s
+FROM StockIngredient s
+JOIN FETCH s.ingredient
+""")
+    List<StockIngredient> findAllWithIngredient();
 }

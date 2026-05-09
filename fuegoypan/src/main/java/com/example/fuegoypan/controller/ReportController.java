@@ -80,4 +80,22 @@ public class ReportController {
         List<StockMovementDTO> dtos = reportService.getStockMovementsReport(start, end);
         return ResponseEntity.ok(dtos);
     }
+
+    @GetMapping("/ingredients-consumption/csv")
+    public ResponseEntity<byte[]> downloadIngredientConsumptionCsv(
+            @RequestParam String start,
+            @RequestParam String end
+    ) {
+
+        byte[] data =
+                reportService.generateIngredientConsumptionCsv(start, end);
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=ingredient_consumption.csv"
+                )
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(data);
+    }
 }

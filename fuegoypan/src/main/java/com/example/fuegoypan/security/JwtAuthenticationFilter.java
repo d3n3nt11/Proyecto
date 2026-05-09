@@ -37,8 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // Rutas públicas
-        if (path.startsWith("/api/auth")) {
+//  RUTAS PÚBLICAS (NO JWT)
+        if (path.startsWith("/api/auth") || path.startsWith("/whatsapp")) {
             filterChain.doFilter(request, response);
             return;
         }

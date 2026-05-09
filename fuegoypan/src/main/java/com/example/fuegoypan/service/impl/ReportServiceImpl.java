@@ -137,4 +137,29 @@ public class ReportServiceImpl implements ReportService {
         }).toList();
 
     }
+
+    @Override
+    public byte[] generateIngredientConsumptionCsv(String start, String end) {
+
+        LocalDateTime startDate = LocalDate.parse(start).atStartOfDay();
+        LocalDateTime endDate = LocalDate.parse(end).atTime(23, 59, 59);
+
+        List<Object[]> results =
+                stockMovementRepo.getIngredientConsumption(startDate, endDate);
+
+        StringBuilder csv = new StringBuilder();
+
+        String BOM = "\uFEFF";
+
+        csv.append(BOM);
+        csv.append("Ingrediente;Cantidad Consumida\n");
+
+        for (Object[] row : results) {
+
+            csv.append(row[0]).append(";");
+            csv.append(row[1]).append("\n");
+        }
+
+        return csv.toString().getBytes(StandardCharsets.UTF_8);
+    }
 }

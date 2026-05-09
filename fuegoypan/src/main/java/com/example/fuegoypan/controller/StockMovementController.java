@@ -26,4 +26,5 @@ public class StockMovementController {
         stockMovementService.registerSaleConsumption(saleId);
         return ResponseEntity.ok().build();
     }
+
 }

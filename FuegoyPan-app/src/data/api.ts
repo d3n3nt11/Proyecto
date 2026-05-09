@@ -96,13 +96,19 @@ export function getMe() {
     return peticionApi(`${BASE_URL}/users/me`);
 }
 
-export function reponerInvenatario(ingredienteId: number, nuevoStock: number) {
-    return peticionApi(
-        `${BASE_URL}/stock/${ingredienteId}?newStock=${nuevoStock}&checkMin=false`,
-        {
-            method: "PUT",
-        }
-    );
+export function moverStock(
+    ingredienteId: number,
+    quantity: number,
+    type: "RESTOCK" | "ADJUSTMENT"
+) {
+    return peticionApi(`${BASE_URL}/stock-movements`, {
+        method: "POST",
+        body: JSON.stringify({
+            ingredientId: ingredienteId,
+            quantity,
+            type
+        }),
+    });
 }
 export function modificarInventario(ingredienteId: number, nuevoPorcentaje: number) {
     return peticionApi(
@@ -156,7 +162,7 @@ export function getVentasPorFechas(start: string, end: string) {
 }
 // Obtiene el consumo de ingredientes en JSON para visualizar en la app
 export function getConsumoIngredientes(start: string, end: string) {
-    return peticionApi(`${BASE_URL}/reports/ingredientes-consumidos?start=${start}&end=${end}`);
+    return peticionApi( `${BASE_URL}/reports/ingredients-consumption/csv?start=${start}&end=${end}`);
 }
 // Obtiene movimientos de stock en JSON para visualizar en la app
 export function getStockMovementsPorFechas(start: string, end: string) {
