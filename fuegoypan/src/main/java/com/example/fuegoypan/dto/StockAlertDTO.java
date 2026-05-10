@@ -1,19 +1,33 @@
 package com.example.fuegoypan.dto;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class StockAlertDTO {
+    private String ingredientName;
+    private Double currentStock;
+    private Double minStock;
+    private String unit;
+    private String expirationDate;
 
-    private final String ingredientName;
-    private final double currentStock;
-    private final double minStock;
 
-    public StockAlertDTO(String ingredientName, double currentStock, double minStock) {
+    public StockAlertDTO(String ingredientName, Double currentStock, Double minStock) {
         this.ingredientName = ingredientName;
         this.currentStock = currentStock;
         this.minStock = minStock;
+        // unit y expirationDate quedan null automáticamente
     }
 
-    public String getIngredientName() { return ingredientName; }
-    public double getCurrentStock() { return currentStock; }
-    public double getMinStock() { return minStock; }
+
+    public StockAlertDTO(String ingredientName, Double currentStock, Double minStock,
+                         String unit, String expirationDate) {
+        this.ingredientName = ingredientName;
+        this.currentStock = currentStock;
+        this.minStock = minStock;
+        this.unit = unit;
+        this.expirationDate = expirationDate;
+    }
 }

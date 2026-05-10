@@ -39,7 +39,7 @@ public class StockMovement {
 
     }
 
-    // getters/setters
+
     public Long getId() {
         return id;
     }

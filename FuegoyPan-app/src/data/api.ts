@@ -6,7 +6,15 @@ const USAR_DATOS_LOCALES = false;
 const BASE_URL = "http://localhost:8081/api"; 
 
 
-export async function peticionApi(url: string, options?: any) {
+
+export interface BatchReplenishmentDTO {
+    ingredientId: number;
+    quantity: number;
+    expirationDate: string; // formato YYYY-MM-DD
+    batchNumber?: string;   // opcional
+}
+
+export async function peticionApi(url: string, options?: RequestInit) {
     try {
         const token = localStorage.getItem("token"); // Recupera JWT para autenticación
         
@@ -95,19 +103,30 @@ export function getMe() {
     return peticionApi(`${BASE_URL}/users/me`);
 }
 
-// Registra movimiento de stock: reposición o ajuste de inventario
-export function moverStock(
-    ingredienteId: number,
-    quantity: number,
-    type: "RESTOCK" | "ADJUSTMENT"
-) {
-    return peticionApi(`${BASE_URL}/stock-movements`, {
+
+export function reponerInvenatario(ingredienteId: number, nuevoStock: number) {
+    return peticionApi(
+        `${BASE_URL}/stock/${ingredienteId}?newStock=${nuevoStock}&checkMin=false`,
+        {
+            method: "PUT",
+        }
+    );
+}
+
+
+export function reponerInventarioBatch(data: BatchReplenishmentDTO) {
+    return peticionApi(`${BASE_URL}/stock/batch`, {
         method: "POST",
-        body: JSON.stringify({ ingredientId: ingredienteId, quantity, type }),
+        body: JSON.stringify({
+            ingredientId: data.ingredientId,
+            quantity: data.quantity,
+            expirationDate: data.expirationDate,
+            batchNumber: data.batchNumber || null,
+        }),
     });
 }
 
-// Actualiza el stock mínimo de un ingrediente (umbral de alerta)
+
 export function modificarInventario(ingredienteId: number, nuevoPorcentaje: number) {
     return peticionApi(
         `${BASE_URL}/stock/${ingredienteId}/min-stock?minStock=${nuevoPorcentaje}`,
@@ -144,12 +163,16 @@ export function getVentasPorFechas(start: string, end: string) {
     return peticionApi(`${BASE_URL}/reports/sales?start=${start}&end=${end}`);
 }
 
-// Obtiene consumo de ingredientes en JSON 
+
+// Obtiene el consumo de ingredientes en JSON para visualizar en la app
+
 export function getConsumoIngredientes(start: string, end: string) {
     return peticionApi(`${BASE_URL}/reports/ingredients-consumption/csv?start=${start}&end=${end}`);
 }
 
-// Obtiene movimientos de stock en JSON 
+
+// Obtiene movimientos de stock en JSON para visualizar en la app
+
 export function getStockMovementsPorFechas(start: string, end: string) {
     return peticionApi(`${BASE_URL}/reports/stock-movimientos?start=${start}&end=${end}`);
 }
