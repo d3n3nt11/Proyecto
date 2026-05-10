@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 
 export default function NavMenu() {
-    
+    // Array de configuración para generar enlaces dinámicamente
     const categorias = [
         { path: "/burger", nombre: "Comida"},
         { path: "/bebidas", nombre: "Bebidas"},

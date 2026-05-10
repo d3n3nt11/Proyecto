@@ -8,13 +8,9 @@ export default function ReponerInventario() {
     const [ingredients, setIngredients] = useState<IIngredient[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
-
     const [filteredIngredients, setFilteredIngredients] = useState<IIngredient[]>([]);
-
-    // 🔥 cambios de stock
-    const [changes, setChanges] = useState<{ [key: number]: number }>({});
-
-    // 📅 caducidad (simple, opcional)
+    const [stockValues, setStockValues] = useState<{ [key: number]: number }>({});
+    // Caducidad 
     const [expirations, setExpirations] = useState<{ [key: number]: string }>({});
 
     useEffect(() => {
@@ -22,13 +18,18 @@ export default function ReponerInventario() {
             try {
                 const data = await getIngredientes();
                 setIngredients(data);
+                const stockInicial: { [key: number]: number } = {};
+                data.forEach((ingredient) => {
+                    stockInicial[ingredient.ingredientId] = ingredient.currentStock;
+                });
+                setStockValues(stockInicial);
+
             } catch (error) {
                 console.error("Error:", error);
             } finally {
                 setLoading(false);
             }
         };
-
         cargarIngredientes();
     }, []);
 
@@ -44,75 +45,40 @@ export default function ReponerInventario() {
         }
     }, [search, ingredients]);
 
-    // ➕ aumentar stock
+    //aumentar stock
     const aumentarStock = (id: number) => {
-        setChanges((prev) => ({
+        const nuevoValor = (stockValues[id] || 0) + 1;
+        setStockValues((prev) => ({
             ...prev,
-            [id]: (prev[id] || 0) + 1
+            [id]: nuevoValor,
         }));
+        moverStock(id, 1, "RESTOCK"); 
     };
 
-    // ➖ disminuir stock
+    //disminuir stock
     const disminuirStock = (id: number) => {
-        setChanges((prev) => {
-            const actual = prev[id] || 0;
-            if (actual <= 0) return prev;
-
-            return {
-                ...prev,
-                [id]: actual - 1
-            };
-        });
+        const nuevoValor = (stockValues[id] || 0) - 1;
+        if (nuevoValor < 0) return;  // No permitir stock negativo
+        setStockValues((prev) => ({
+            ...prev,
+            [id]: nuevoValor,
+        }));
+        moverStock(id, -1, "RESTOCK"); 
     };
 
-    // 📅 cambiar caducidad (simple)
+    // Cambiar caducidad (solo visual por ahora)
     const cambiarCaducidad = (id: number, value: string) => {
         setExpirations((prev) => ({
             ...prev,
             [id]: value
         }));
-    };
-
-    // ❌ cancelar cambios
-    const cancelarCambios = () => {
-        setChanges({});
-        setExpirations({});
-    };
-
-    // 💾 guardar cambios
-    const guardarCambios = async () => {
-        try {
-            const requests = Object.entries(changes).map(([id, quantity]) => {
-                if (quantity === 0) return null;
-
-                return moverStock(
-                    Number(id),
-                    quantity,
-                    "RESTOCK"
-                );
-            });
-
-            await Promise.all(requests.filter(Boolean));
-
-            setChanges({});
-            setExpirations({});
-
-            alert("Inventario actualizado correctamente");
-
-        } catch (error) {
-            console.error(error);
-            alert("Error al actualizar inventario");
-        }
+        // ⚠️ Aquí iría la llamada a la API si tuvieras endpoint para caducidad
     };
 
     return (
         <div className="bg-[#F2E9DB] min-h-screen flex flex-col items-center py-10">
 
-            <img
-                src="../src/assets/logo.png"
-                alt="logo"
-                className="w-75 h-45 rounded-full"
-            />
+            <img src="../src/assets/logo.png" alt="logo" className="w-75 h-45 rounded-full"/>
 
             <h1 className="text-2xl text-white font-bold mb-4">
                 Reponer inventario
@@ -131,110 +97,74 @@ export default function ReponerInventario() {
 
             {/* LOADING */}
             {loading && (
-                <p className="text-gray-600 mt-4">
-                    Cargando inventario...
-                </p>
+                <p className="text-gray-600 mt-4">Cargando inventario...</p>
             )}
 
-            {/* LISTA */}
+            {/* LISTA DE INGREDIENTES */}
             {!loading && (
-                <div className="grid grid-cols-1 p-4 gap-4 w-full">
-
-                    {filteredIngredients.map((ingredient) => {
-
-                        const pending = changes[ingredient.ingredientId] || 0;
-                        const previewStock = ingredient.currentStock + pending;
-
-                        return (
-                            <div
-                                key={ingredient.ingredientId}
-                                className="bg-white rounded-2xl shadow-lg p-3 flex items-center justify-between gap-3"
-                            >
-
-                                {/* IMAGEN */}
+                <div className="grid grid-cols-1 p-4 gap-4 w-full max-w-5xl">
+                    {filteredIngredients.map((ingredient) => (
+                        <div 
+                            key={ingredient.ingredientId} 
+                            className="bg-white rounded-2xl shadow-lg p-4 grid grid-cols-6 gap-4 items-center"
+                        >
+                            {/* IMAGEN */}
+                            <div className="col-span-1">
                                 <img
                                     src={ingredient.image}
                                     alt={ingredient.ingredientName}
                                     className="rounded-lg h-16 w-16 object-cover"
                                 />
-
-                                {/* INFO */}
-                                <div className="flex flex-col flex-1">
-
-                                    <h3 className="font-semibold text-base text-gray-800">
-                                        {ingredient.ingredientName}
-                                    </h3>
-
-                                    <p className="text-lg font-bold text-red-600">
-                                        {previewStock} {ingredient.unit}
-                                    </p>
-
-                                    {/* 📅 CADUCIDAD */}
-                                    <input
-                                        type="date"
-                                        value={expirations[ingredient.ingredientId] || ingredient.expirationDate || ""}
-                                        onChange={(e) =>
-                                            cambiarCaducidad(ingredient.ingredientId, e.target.value)
-                                        }
-                                        className="mt-1 text-xs border rounded p-1"
-                                    />
-                                </div>
-
-                                {/* CONTROLES */}
-                                <div className="flex items-center gap-3">
-
-                                    <button
-                                        onClick={() => disminuirStock(ingredient.ingredientId)}
-                                        className="bg-red-600 text-white w-8 h-8 rounded-full"
-                                    >
-                                        -
-                                    </button>
-
-                                    <button
-                                        onClick={() => aumentarStock(ingredient.ingredientId)}
-                                        className="bg-green-600 text-white w-8 h-8 rounded-full"
-                                    >
-                                        +
-                                    </button>
-
-                                </div>
                             </div>
-                        );
-                    })}
-                </div>
-            )}
-
-            {/* BOTONES */}
-            {!loading && (
-                <div className="fixed bottom-20 flex gap-3">
-
-                    {/* CANCELAR */}
-                    {Object.keys(changes).length > 0 || Object.keys(expirations).length > 0 ? (
-                        <button
-                            onClick={cancelarCambios}
-                            className="bg-gray-500 text-white px-6 py-3 rounded-xl"
-                        >
-                            Cancelar
-                        </button>
-                    ) : null}
-
-                    {/* GUARDAR */}
-                    {Object.keys(changes).length > 0 && (
-                        <button
-                            onClick={guardarCambios}
-                            className="bg-black text-white px-6 py-3 rounded-xl shadow-lg"
-                        >
-                            Guardar cambios
-                        </button>
-                    )}
-
+                            
+                            {/* NOMBRE */}
+                            <div className="col-span-1">
+                                <h3 className="font-semibold text-base text-gray-800">
+                                    {ingredient.ingredientName}
+                                </h3>
+                            </div>
+                            
+                            {/* STOCK - Muestra stockValues[id] (igual que ConfigurarInventario) */}
+                            <div className="col-span-1">
+                                <p className="text-lg font-bold text-red-600">
+                                    {stockValues[ingredient.ingredientId] ?? 0} {ingredient.unit}
+                                </p>
+                            </div>
+                            
+                            {/* CADUCIDAD */}
+                            <div className="col-span-1">
+                                <input
+                                    type="date"
+                                    value={expirations[ingredient.ingredientId] || ingredient.expirationDate || ""}
+                                    onChange={(e) =>
+                                        cambiarCaducidad(ingredient.ingredientId, e.target.value)
+                                    }
+                                    className="text-sm border rounded-lg p-2 w-full"
+                                />
+                            </div>
+                            
+                            {/* BOTONES +/- (mismo patrón que ConfigurarInventario) */}
+                            <div className="col-span-2 flex items-center justify-end gap-3">
+                                <button
+                                    onClick={() => disminuirStock(ingredient.ingredientId)}
+                                    className="bg-red-600 hover:bg-red-700 text-white w-10 h-10 rounded-full font-bold text-lg transition-colors"
+                                >
+                                    -
+                                </button>
+                                <button
+                                    onClick={() => aumentarStock(ingredient.ingredientId)}
+                                    className="bg-green-600 hover:bg-green-700 text-white w-10 h-10 rounded-full font-bold text-lg transition-colors"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
 
             {!loading && filteredIngredients.length === 0 && (
-                <p className="text-gray-500 mt-4">
-                    No se encontraron ingredientes
-                </p>
+                <p className="text-gray-500 mt-4">No se encontraron ingredientes</p>
             )}
 
             <SubNavegacion />

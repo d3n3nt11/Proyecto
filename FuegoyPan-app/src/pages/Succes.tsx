@@ -10,7 +10,7 @@ export default function Success() {
       <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md w-full text-center">
         
         <h1 className="text-3xl font-bold text-green-600 mb-4">
-          ✅ Pago completado
+          Pago completado
         </h1>
 
         <p className="text-gray-600 mb-4">
