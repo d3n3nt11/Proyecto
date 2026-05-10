@@ -7,7 +7,15 @@ const USAR_DATOS_LOCALES = false;
 
 const BASE_URL = "http://localhost:8081/api";
 
-export async function peticionApi(url: string, options?: any) {
+
+export interface BatchReplenishmentDTO {
+    ingredientId: number;
+    quantity: number;
+    expirationDate: string; // formato YYYY-MM-DD
+    batchNumber?: string;   // opcional
+}
+
+export async function peticionApi(url: string, options?: RequestInit) {
     try {
         const token = localStorage.getItem("token");
         
@@ -92,10 +100,10 @@ export function getPostres(): Promise<IProducto[]> {
 }
 
 export function getMe() {
-    // getMe siempre va a la API 
     return peticionApi(`${BASE_URL}/users/me`);
 }
 
+// 🔹 FUNCIÓN ANTIGUA: Actualiza stock directamente (sin lotes)
 export function reponerInvenatario(ingredienteId: number, nuevoStock: number) {
     return peticionApi(
         `${BASE_URL}/stock/${ingredienteId}?newStock=${nuevoStock}&checkMin=false`,
@@ -104,6 +112,20 @@ export function reponerInvenatario(ingredienteId: number, nuevoStock: number) {
         }
     );
 }
+
+
+export function reponerInventarioBatch(data: BatchReplenishmentDTO) {
+    return peticionApi(`${BASE_URL}/stock/batch`, {
+        method: "POST",
+        body: JSON.stringify({
+            ingredientId: data.ingredientId,
+            quantity: data.quantity,
+            expirationDate: data.expirationDate,
+            batchNumber: data.batchNumber || null,
+        }),
+    });
+}
+
 export function modificarInventario(ingredienteId: number, nuevoPorcentaje: number) {
     return peticionApi(
         `${BASE_URL}/stock/${ingredienteId}/min-stock?minStock=${nuevoPorcentaje}`,
@@ -135,7 +157,6 @@ export async function descargarInformeCSV(start: string, end: string) {
 }
 
 export async function descargarStockMovements(start: string, end: string) {
-
     const token = localStorage.getItem("token");
 
     const response = await fetch(`${BASE_URL}/reports/stock-movements/csv?start=${start}&end=${end}`,
@@ -154,10 +175,12 @@ export async function descargarStockMovements(start: string, end: string) {
 export function getVentasPorFechas(start: string, end: string) {
     return peticionApi(`${BASE_URL}/reports/sales?start=${start}&end=${end}`);
 }
+
 // Obtiene el consumo de ingredientes en JSON para visualizar en la app
 export function getConsumoIngredientes(start: string, end: string) {
     return peticionApi(`${BASE_URL}/reports/ingredientes-consumidos?start=${start}&end=${end}`);
 }
+
 // Obtiene movimientos de stock en JSON para visualizar en la app
 export function getStockMovementsPorFechas(start: string, end: string) {
     return peticionApi(`${BASE_URL}/reports/stock-movimientos?start=${start}&end=${end}`);

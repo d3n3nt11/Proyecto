@@ -4,10 +4,16 @@ import com.example.fuegoypan.dto.StockMovementDTO;
 import com.example.fuegoypan.model.*;
 import com.example.fuegoypan.repository.*;
 import com.example.fuegoypan.service.StockMovementService;
+import com.example.fuegoypan.service.WhatsAppService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class StockMovementServiceImpl implements StockMovementService {
@@ -17,90 +23,167 @@ public class StockMovementServiceImpl implements StockMovementService {
     private final SaleRepo saleRepo;
     private final RecipeRepo recipeRepo;
     private final StockIngredientRepo stockIngredientRepo;
+    private final WhatsAppService whatsappService;
+
+    // Evita spam de alertas
+    private final Set<Long> alertedIngredients = new HashSet<>();
 
     public StockMovementServiceImpl(
             StockMovementRepo stockMovementRepo,
             IngredientRepo ingredientRepo,
             SaleRepo saleRepo,
             RecipeRepo recipeRepo,
-            StockIngredientRepo stockIngredientRepo
+            StockIngredientRepo stockIngredientRepo,
+            WhatsAppService whatsappService
     ) {
         this.stockMovementRepo = stockMovementRepo;
         this.ingredientRepo = ingredientRepo;
         this.saleRepo = saleRepo;
         this.recipeRepo = recipeRepo;
         this.stockIngredientRepo = stockIngredientRepo;
+        this.whatsappService = whatsappService;
     }
 
-
     @Override
+    @Transactional
     public void createMovement(StockMovementDTO dto) {
 
         Ingredient ingredient = ingredientRepo.findById(dto.getIngredientId())
-                .orElseThrow();
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Ingrediente no encontrado"
+                        ));
 
         StockIngredient stock = stockIngredientRepo
                 .findByIngredient_Id(ingredient.getId())
-                .orElseThrow();
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Stock no encontrado"
+                        ));
+
+        double newStock = stock.getCurrentStock() + dto.getQuantity();
+
+        if (newStock < 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Stock insuficiente para el ingrediente: "
+                            + ingredient.getName()
+            );
+        }
 
         StockMovement movement = new StockMovement();
         movement.setIngredient(ingredient);
         movement.setQuantity(dto.getQuantity());
         movement.setType(dto.getType());
         movement.setCreatedAt(LocalDateTime.now());
+        movement.setSale(null);
 
         if (dto.getSaleId() != null) {
+
             Sale sale = saleRepo.findById(dto.getSaleId())
-                    .orElseThrow();
+                    .orElseThrow(() ->
+                            new ResponseStatusException(
+                                    HttpStatus.NOT_FOUND,
+                                    "Venta no encontrada"
+                            ));
+
             movement.setSale(sale);
         }
 
         stockMovementRepo.save(movement);
-        stock.setCurrentStock(stock.getCurrentStock() + dto.getQuantity());
+
+        // Actualizar stock
+        stock.setCurrentStock(newStock);
 
         stockIngredientRepo.save(stock);
+
+        // Verificar stock bajo
+        checkLowStock(stock);
     }
 
+    private void checkLowStock(StockIngredient stock) {
 
-    // CONSUMO POR VENTA
+        boolean lowStock =
+                stock.getCurrentStock() <= stock.getMinStock();
+
+        // Enviar SOLO una vez
+        if (lowStock &&
+                !alertedIngredients.contains(stock.getId())) {
+
+            String msg = """
+                    STOCK BAJO:
+
+                    - %s (%.2f/%.2f)
+                    """.formatted(
+                    stock.getIngredient().getName(),
+                    stock.getCurrentStock(),
+                    stock.getMinStock()
+            );
+
+            whatsappService.sendMessage(msg);
+
+            alertedIngredients.add(stock.getId());
+        }
+
+        // Reset si vuelve a stock normal
+        if (!lowStock) {
+            alertedIngredients.remove(stock.getId());
+        }
+    }
+
     @Override
+    @Transactional
     public void registerSaleConsumption(Long saleId) {
 
         Sale sale = saleRepo.findById(saleId)
-                .orElseThrow();
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Venta no encontrada"
+                        ));
 
-        // solo si está PAID
         if (sale.getStatus() != SaleStatus.PAID) {
-            throw new IllegalStateException("La venta no está en pagada");
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La venta no está pagada"
+            );
         }
 
-        //  ANTI-DUPLICADO
         boolean alreadyProcessed =
                 stockMovementRepo.existsBySale_IdAndType(
                         saleId,
                         MovementType.SALE
                 );
 
-        if (alreadyProcessed) {
-            return;
-        }
+        if (alreadyProcessed) return;
 
         for (SaleLine line : sale.getLines()) {
 
             Long productId = line.getProduct().getId();
             int quantitySold = line.getQuantity();
 
-            List<Recipe> recipes = recipeRepo.findByProductId(productId);
+            List<Recipe> recipes =
+                    recipeRepo.findByProductId(productId);
 
             for (Recipe recipe : recipes) {
 
                 double totalConsumption =
                         recipe.getQuantity() * quantitySold;
 
-                StockMovementDTO dto = new StockMovementDTO();
-                dto.setIngredientId(recipe.getIngredient().getId());
+                StockMovementDTO dto =
+                        new StockMovementDTO();
+
+                dto.setIngredientId(
+                        recipe.getIngredient().getId()
+                );
+
                 dto.setQuantity(-totalConsumption);
+
                 dto.setType(MovementType.SALE);
+
                 dto.setSaleId(saleId);
 
                 createMovement(dto);

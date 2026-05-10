@@ -1,5 +1,6 @@
 package com.example.fuegoypan.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;  // 🔹 IMPORTANTE
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -30,6 +31,7 @@ public class StockIngredient {
 
     @OneToMany(mappedBy = "stockIngredient", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonManagedReference
     private List<StockBatch> batches = new ArrayList<>();
 
 

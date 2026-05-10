@@ -1,5 +1,6 @@
 package com.example.fuegoypan.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;  // 🔹 IMPORTANTE
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -17,9 +18,10 @@ public class StockBatch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    // 🔹 CAMBIO: @JsonBackReference indica que ESTE lado se OMITE al serializar
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_ingredient_id", nullable = false)
+    @JsonBackReference  // ← "Hijo": se excluye para evitar bucle infinito
     private StockIngredient stockIngredient;
 
     private String batchNumber;
@@ -27,7 +29,7 @@ public class StockBatch {
     private LocalDate expirationDate;
     private LocalDateTime createdAt;
 
-
+    // Constructor útil
     public StockBatch(StockIngredient stockIngredient, Double quantity, LocalDate expirationDate) {
         this.stockIngredient = stockIngredient;
         this.quantity = quantity;
@@ -35,13 +37,9 @@ public class StockBatch {
         this.createdAt = LocalDateTime.now();
     }
 
-
+    // Métodos de utilidad...
     public boolean isExpired() {
         return expirationDate.isBefore(LocalDate.now());
-    }
-
-    public boolean hasEnoughStock(Double requested) {
-        return quantity != null && quantity >= requested;
     }
 
     public void consume(Double amount) {

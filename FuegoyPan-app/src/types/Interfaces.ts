@@ -36,12 +36,14 @@
         imageUrl?: string;
     }
     // Datos de un ingrediente
-    export interface IIngredient {
-        ingredientId: number;
-        ingredientName: string;
-        currentStock: number;
-        minStock: number;
-        expirationDate?: string;
-        unit?: string;
-        image?: string;
-    }
+   export interface IIngredient {
+    ingredientId: number;
+    ingredientName: string;
+    currentStock: number;
+    minStock: number;
+    expirationDate?: string;        
+    unit?: string;
+    image?: string;
+    batchNumber?: string;          
+    daysUntilExpiration?: number;   
+}
