@@ -1,17 +1,23 @@
 package com.example.fuegoypan.model;
 
 import jakarta.persistence.*;
-
+import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "ingredients")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Ingredient {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-
     private String unit; // kg, g, unidades, litros...
 
     @Column(name = "image")
@@ -20,52 +26,18 @@ public class Ingredient {
     @OneToOne(mappedBy = "ingredient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private StockIngredient stock;
 
-    public Ingredient(Long id, String name, String unit, StockIngredient stock) {
-        this.id = id;
+    public Ingredient(String name, String unit) {
         this.name = name;
         this.unit = unit;
-        this.stock = stock;
-    }
-    public Ingredient() {
     }
 
-    public Long getId() {
-        return id;
+
+    public Double getTotalStock() {
+        return stock != null ? stock.getTotalValidStock() : 0.0;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public StockIngredient getStock() {
-        return stock;
-    }
-
-    public void setStock(StockIngredient stock) {
-        this.stock = stock;
+    public boolean isLowStock() {
+        return stock != null && stock.getMinStock() != null &&
+                getTotalStock() <= stock.getMinStock();
     }
 }

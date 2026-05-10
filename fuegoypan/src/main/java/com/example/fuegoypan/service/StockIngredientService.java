@@ -7,15 +7,15 @@ import java.util.List;
 
 public interface StockIngredientService {
 
-    List<StockIngredientDTO> getAllStock(); // Listar todo el stock
+    List<StockIngredientDTO> getAllStock();
 
-    StockIngredientDTO getByIngredientId(Long ingredientId); // Consultar stock de un ingrediente
+    StockIngredientDTO getByIngredientId(Long ingredientId);
 
-    StockIngredientDTO updateStock(Long ingredientId, Double newStock, boolean checkMin); // Actualizar stock manualmente
+    StockIngredientDTO updateStock(Long ingredientId, Double newStock, boolean checkMin);
 
-    List<StockAlertDTO> getIngredientsBelowMin(); // Para alertas de stock mínimo
+    List<StockAlertDTO> getIngredientsBelowMin();
 
-    List<StockIngredientDTO> getIngredientsExpired(); // Para alertas de caducidad
+    List<StockIngredientDTO> getIngredientsExpired();
 
     StockIngredientDTO updateMinStock(Long ingredientId, Double minStock);
 }

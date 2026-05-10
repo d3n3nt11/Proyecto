@@ -2,12 +2,18 @@ package com.example.fuegoypan.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "stock_ingredient")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class StockIngredient {
+
     @Id
     private Long id;
 
@@ -17,69 +23,40 @@ public class StockIngredient {
     private Ingredient ingredient;
 
     private Double currentStock;
-
     private Double maxStock;
-
-    private Double minStock; //para las alertas
-
+    private Double minStock;
     private LocalDate expirationDate;
 
-    public StockIngredient() {
+
+    @OneToMany(mappedBy = "stockIngredient", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<StockBatch> batches = new ArrayList<>();
+
+
+    public Double getTotalValidStock() {
+        if (batches == null) return 0.0;
+        return batches.stream()
+                .filter(b -> !b.isExpired() && b.getQuantity() != null && b.getQuantity() > 0)
+                .mapToDouble(StockBatch::getQuantity)
+                .sum();
     }
 
-    public StockIngredient(Ingredient ingredient, Double currentStock, Double maxStock, Double minStock, LocalDate expirationDate) {
-        this.ingredient = ingredient;
-        this.currentStock = currentStock;
-        this.maxStock = maxStock;
-        this.minStock = minStock;
-        this.expirationDate = expirationDate;
+    public StockBatch getEarliestValidBatch() {
+        if (batches == null) return null;
+        return batches.stream()
+                .filter(b -> !b.isExpired() && b.getQuantity() != null && b.getQuantity() > 0)
+                .min((b1, b2) -> {
+                    int dateCompare = b1.getExpirationDate().compareTo(b2.getExpirationDate());
+                    return dateCompare != 0 ? dateCompare : b1.getCreatedAt().compareTo(b2.getCreatedAt());
+                })
+                .orElse(null);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Ingredient getIngredient() {
-        return ingredient;
-    }
-
-    public void setIngredient(Ingredient ingredient) {
-        this.ingredient = ingredient;
-    }
-
-    public Double getCurrentStock() {
-        return currentStock;
-    }
-
-    public void setCurrentStock(Double currentStock) {
-        this.currentStock = currentStock;
-    }
-
-    public Double getMaxStock() {
-        return maxStock;
-    }
-
-    public void setMaxStock(Double maxStock) {
-        this.maxStock = maxStock;
-    }
-
-    public Double getMinStock() {
-        return minStock;
-    }
-
-    public void setMinStock(Double minStock) {
-        this.minStock = minStock;
-    }
-
-    public LocalDate getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(LocalDate expirationDate) {
-        this.expirationDate = expirationDate;
+    public void addBatch(Double quantity, LocalDate expirationDate) {
+        StockBatch batch = new StockBatch(this, quantity, expirationDate);
+        this.batches.add(batch);
+        this.currentStock = getTotalValidStock();
+        this.expirationDate = getEarliestValidBatch() != null ?
+                getEarliestValidBatch().getExpirationDate() : null;
     }
 }
