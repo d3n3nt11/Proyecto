@@ -88,7 +88,7 @@ public class ReportServiceImpl implements ReportService {
             dto.setTotal(s.getTotal());
             dto.setStatus(s.getStatus());
             dto.setUserId(s.getUser() != null ? s.getUser().getId() : null);
-            dto.setUserName(s.getUser() != null ? s.getUser().getName() : "Desconocido"); // 👈 NUEVO
+            dto.setUserName(s.getUser() != null ? s.getUser().getName() : "Desconocido");
             return dto;
         }).toList();
     }
@@ -105,7 +105,7 @@ public class ReportServiceImpl implements ReportService {
         return movements.stream().map(m -> {
             StockMovementDTO dto = new StockMovementDTO();
             dto.setIngredientId(m.getIngredient() != null ? m.getIngredient().getId() : null);
-            dto.setIngredientName(m.getIngredient() != null ? m.getIngredient().getName() : "N/A"); // 👈 NUEVO
+            dto.setIngredientName(m.getIngredient() != null ? m.getIngredient().getName() : "N/A");
             dto.setQuantity(m.getQuantity());
             dto.setType(m.getType());
             dto.setSaleId(m.getSale() != null ? m.getSale().getId() : null);

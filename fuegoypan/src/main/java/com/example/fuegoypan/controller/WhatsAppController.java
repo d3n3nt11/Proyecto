@@ -51,7 +51,7 @@ public class WhatsAppController {
     // ESTADO SIMPLIFICADO: solo "nombre: actual/min"
     private String buildFullStatusSimplified() {
         List<StockIngredientDTO> all = stockService.getAllStock();
-        StringBuilder sb = new StringBuilder("📊 ESTADO GENERAL\n\n");
+        StringBuilder sb = new StringBuilder("ESTADO GENERAL\n\n");
 
         for (var s : all) {
             sb.append(s.getIngredientName())
@@ -68,7 +68,7 @@ public class WhatsAppController {
     // 📦 STOCK BAJO
     private String buildStockResponse() {
         List<StockIngredientDTO> all = stockService.getAllStock();
-        StringBuilder sb = new StringBuilder("📦 STOCK BAJO\n\n");
+        StringBuilder sb = new StringBuilder("STOCK BAJO\n\n");
 
         boolean hasLow = false;
         for (var s : all) {
@@ -83,7 +83,7 @@ public class WhatsAppController {
             }
         }
 
-        if (!hasLow) sb.append("✅ Todo correcto");
+        if (!hasLow) sb.append("Todo correcto");
 
         return sb.toString();
     }
@@ -91,7 +91,7 @@ public class WhatsAppController {
     // ⏰ CADUCADOS
     private String buildExpiredResponse() {
         List<StockIngredientDTO> all = stockService.getAllStock();
-        StringBuilder sb = new StringBuilder("⏰ CADUCADOS\n\n");
+        StringBuilder sb = new StringBuilder("CADUCADOS\n\n");
 
         boolean hasExpired = false;
         LocalDate today = LocalDate.now();
@@ -106,7 +106,7 @@ public class WhatsAppController {
             }
         }
 
-        if (!hasExpired) sb.append("✅ No hay ingredientes caducados");
+        if (!hasExpired) sb.append("No hay ingredientes caducados");
 
         return sb.toString();
     }

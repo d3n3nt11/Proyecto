@@ -59,7 +59,7 @@ public class StockIngredientServiceImpl implements StockIngredientService {
         stock.setCurrentStock(newStock);
         stockRepo.save(stock);
 
-        // 👇 NUEVO: Registrar el movimiento si hubo cambio
+        // Registrar el movimiento si hubo cambio
         if (diferencia != 0) {
             MovementType tipo = diferencia > 0 ? MovementType.RESTOCK : MovementType.ADJUSTMENT;
 
