@@ -22,16 +22,12 @@ public class StockScheduler {
     private final StockBatchService batchService;
     private final WhatsAppService whatsappService;
 
-
     private boolean expiredAlertSent = false;
     private boolean expiringSoonAlertSent = false;
     private boolean lowStockAlertSent = false;
 
-
     @Scheduled(cron = "0 0 8 * * ?")
     public void checkExpiredIngredients() {
-        log.info("Verificando ingredientes caducados...");
-
 
         List<ExpiredBatchDTO> expiredBatches = batchService.getExpiredBatches();
 
@@ -41,16 +37,14 @@ public class StockScheduler {
             log.warn("Alerta de caducidad enviada: {} lotes afectados", expiredBatches.size());
         }
 
-        // Reset flag si ya no hay caducados
         if (expiredBatches.isEmpty() && stockService.getIngredientsExpired().isEmpty()) {
             expiredAlertSent = false;
         }
     }
 
-
     @Scheduled(cron = "0 0 9 * * ?")
     public void checkExpiringSoon() {
-        log.info("Verificando lotes por caducar (próximos 3 días)...");
+        log.info("Verificando lotes por caducar (próximos 3 días)");
 
         List<ExpiredBatchDTO> expiringSoon = batchService.getBatchesExpiringInDays(3);
 
@@ -60,16 +54,14 @@ public class StockScheduler {
             log.info("Alerta preventiva enviada: {} lotes por caducar", expiringSoon.size());
         }
 
-        // Reset flag si ya no hay lotes próximos a caducar
         if (expiringSoon.isEmpty()) {
             expiringSoonAlertSent = false;
         }
     }
 
-
     @Scheduled(cron = "0 0 * * * ?")
     public void checkLowStock() {
-        log.debug("Verificando stock bajo...");
+        log.debug("Verificando stock bajo");
 
         List<StockAlertDTO> lowStock = stockService.getIngredientsBelowMin();
 
@@ -79,52 +71,44 @@ public class StockScheduler {
             log.warn("Alerta de stock bajo enviada: {} ingredientes", lowStock.size());
         }
 
-
         if (lowStock.isEmpty()) {
             lowStockAlertSent = false;
         }
     }
 
-
     private void sendExpiredAlert(List<ExpiredBatchDTO> expiredBatches) {
-        StringBuilder msg = new StringBuilder(" LOTEs CADUCADOS - RETIRAR INMEDIATAMENTE:\n\n");
+        StringBuilder msg = new StringBuilder("Lotes caducados:\n\n");
 
         expiredBatches.forEach(batch ->
                 msg.append("• ")
                         .append(batch.getIngredientName())
                         .append(batch.getBatchNumber() != null ? " [Lote: " + batch.getBatchNumber() + "]" : "")
                         .append("\n")
-                        .append("  Caducó: ")
+                        .append("Caducó: ")
                         .append(batch.getExpirationDate())
                         .append(" (hace ")
                         .append(batch.getDaysSinceExpired())
                         .append(" días)\n")
-                        .append("  Cantidad pendiente: ")
+                        .append("Cantidad pendiente: ")
                         .append(batch.getQuantity())
                         .append("\n\n")
         );
-
-        msg.append("Acciones requeridas:\n")
-                .append("1. Retirar del inventario\n")
-                .append("2. Registrar como merma\n")
-                .append("3. Revisar fechas en próximos pedidos");
-
+        
         whatsappService.sendMessage(msg.toString());
     }
 
     private void sendExpiredIngredientAlert(List<StockAlertDTO> expiredIngredients) {
-        StringBuilder msg = new StringBuilder("⚠INGREDIENTES CADUCADOS:\n\n");
+        StringBuilder msg = new StringBuilder("INGREDIENTES CADUCADOS:\n\n");
 
         expiredIngredients.forEach(stock ->
                 msg.append("- ")
                         .append(stock.getIngredientName())
-                        .append(" (Stock actual: ")
+                        .append(" (Stock: ")
                         .append(stock.getCurrentStock())
-                        .append(")")
-                        .append("\n")
+                        .append(")\n")
         );
 
-        msg.append("\n🔍 Verificar lotes individuales en el sistema para más detalles.");
+        msg.append("\nVerificar lotes en el sistema.");
         whatsappService.sendMessage(msg.toString());
     }
 
@@ -136,20 +120,20 @@ public class StockScheduler {
                         .append(batch.getIngredientName())
                         .append(batch.getBatchNumber() != null ? " [Lote: " + batch.getBatchNumber() + "]" : "")
                         .append("\n")
-                        .append("  Caduca: ")
+                        .append("Caduca:")
                         .append(batch.getExpirationDate())
                         .append("\n")
-                        .append("  Cantidad: ")
+                        .append("Cantidad:")
                         .append(batch.getQuantity())
                         .append("\n\n")
         );
 
-        msg.append(" Recomendación: Usar primero estos lotes en preparaciones.");
+        msg.append("Lotes proximos a caducar");
         whatsappService.sendMessage(msg.toString());
     }
 
     private void sendLowStockAlert(List<StockAlertDTO> lowStock) {
-        StringBuilder msg = new StringBuilder(" STOCK BAJO - REPOSICIÓN URGENTE:\n\n");
+        StringBuilder msg = new StringBuilder("STOCK BAJO\n\n");
 
         lowStock.forEach(stock ->
                 msg.append("- ")
@@ -158,13 +142,24 @@ public class StockScheduler {
                         .append(stock.getCurrentStock())
                         .append("/")
                         .append(stock.getMinStock())
-                        .append(" ")
-                        .append(stock.getUnit() != null ? stock.getUnit() : "und")
                         .append(")\n")
         );
 
-        msg.append("\n🛒 Contactar con proveedores para reposición.");
+        msg.append("\n se necesita restock.");
         whatsappService.sendMessage(msg.toString());
     }
 
+    public void resetAlertFlags() {
+        expiredAlertSent = false;
+        expiringSoonAlertSent = false;
+        lowStockAlertSent = false;
+        log.info("alertas reseteados");
+    }
+
+    public void runAllChecksManually() {
+        log.info("verificaciones manuales");
+        checkExpiredIngredients();
+        checkExpiringSoon();
+        checkLowStock();
+    }
 }
