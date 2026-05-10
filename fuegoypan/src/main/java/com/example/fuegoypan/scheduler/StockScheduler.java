@@ -80,25 +80,25 @@ public class StockScheduler {
         }
     }
 
-    // 🔹 NUEVO: Alerta preventiva de caducidad próxima (3 días antes)
+
     @Scheduled(cron = "0 0 9 * * ?")  // Diariamente a las 9:00 AM
     public void checkExpiringSoon() {
         List<ExpiredBatchDTO> expiringSoon = batchService.getBatchesExpiringInDays(3);
 
         if (!expiringSoon.isEmpty()) {
-            StringBuilder msg = new StringBuilder("⏰ CADUCIDAD PRÓXIMA (3 días):\n\n");
+            StringBuilder msg = new StringBuilder("CADUCIDAD PRÓXIMA (3 días):\n\n");
             expiringSoon.forEach(batch ->
                     msg.append("• ")
                             .append(batch.getIngredientName())
                             .append(" [")
                             .append(batch.getBatchNumber())
                             .append("]\n")
-                            .append("  📅 Caduca: ")
+                            .append("  Caduca: ")
                             .append(batch.getExpirationDate())
                             .append(" (en ")
                             .append(3 - batch.getDaysSinceExpired())
                             .append(" días)\n")
-                            .append("  📦 Cantidad: ")
+                            .append("  Cantidad: ")
                             .append(batch.getQuantity())
                             .append("\n\n")
             );
