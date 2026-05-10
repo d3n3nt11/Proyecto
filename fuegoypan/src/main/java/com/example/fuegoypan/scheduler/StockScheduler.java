@@ -26,6 +26,7 @@ public class StockScheduler {
     private boolean expiringSoonAlertSent = false;
     private boolean lowStockAlertSent = false;
 
+
     @Scheduled(cron = "0 0 8 * * ?")
     public void checkExpiredIngredients() {
 
@@ -46,6 +47,7 @@ public class StockScheduler {
     public void checkExpiringSoon() {
         log.info("Verificando lotes por caducar (próximos 3 días)");
 
+
         List<ExpiredBatchDTO> expiringSoon = batchService.getBatchesExpiringInDays(3);
 
         if (!expiringSoon.isEmpty() && !expiringSoonAlertSent) {
@@ -59,16 +61,20 @@ public class StockScheduler {
         }
     }
 
+
     @Scheduled(cron = "0 0 * * * ?")
     public void checkLowStock() {
         log.debug("Verificando stock bajo");
 
+
         List<StockAlertDTO> lowStock = stockService.getIngredientsBelowMin();
+
 
         if (!lowStock.isEmpty() && !lowStockAlertSent) {
             sendLowStockAlert(lowStock);
             lowStockAlertSent = true;
             log.warn("Alerta de stock bajo enviada: {} ingredientes", lowStock.size());
+
         }
 
         if (lowStock.isEmpty()) {

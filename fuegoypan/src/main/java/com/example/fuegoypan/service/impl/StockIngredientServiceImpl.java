@@ -36,7 +36,7 @@ public class StockIngredientServiceImpl implements StockIngredientService {
 
     @Override
     public List<StockIngredientDTO> getAllStock() {
-        return stockRepo.findAll().stream()
+        return stockRepo.findAllWithIngredient().stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
@@ -59,7 +59,7 @@ public class StockIngredientServiceImpl implements StockIngredientService {
         stock.setCurrentStock(newStock);
         stockRepo.save(stock);
 
-        // 👇 NUEVO: Registrar el movimiento si hubo cambio
+        // Registrar el movimiento si hubo cambio
         if (diferencia != 0) {
             MovementType tipo = diferencia > 0 ? MovementType.RESTOCK : MovementType.ADJUSTMENT;
 

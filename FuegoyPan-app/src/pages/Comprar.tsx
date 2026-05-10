@@ -6,11 +6,13 @@ import { useNavigate } from "react-router-dom";
 export default function Comprar() {
   const { cart, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
+    // Calcular total suma de precio × cantidad por cada item
   const total = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
 
+  // Handler: procesa pago, crea venta en API y navega a confirmación
   const handleCheckout = async () => {
   const token = localStorage.getItem("token");
 
@@ -33,7 +35,7 @@ export default function Comprar() {
     // guardamos el ID de la venta
     localStorage.setItem("saleId", createdSale.id);
 
-    clearCart();
+    clearCart();// Vaciar carrito tras compra exitosa
 
     // vamos a la pantalla de pago
     navigate("/pago");

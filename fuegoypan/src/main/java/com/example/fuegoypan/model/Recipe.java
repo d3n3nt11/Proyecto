@@ -22,18 +22,18 @@ public class Recipe {
     @Column(nullable = false)
     private Double quantity;
 
-    // 🔹 Constructor vacío (obligatorio para JPA)
+    // Constructor vacío (obligatorio para JPA)
     public Recipe() {
     }
 
-    // 🔹 Constructor útil
+    // Constructor útil
     public Recipe(Product product, Ingredient ingredient, Double quantity) {
         this.product = product;
         this.ingredient = ingredient;
         this.quantity = quantity;
     }
 
-    // 🔹 Getters y Setters
+    // Getters y Setters
 
     public Long getId() {
         return id;

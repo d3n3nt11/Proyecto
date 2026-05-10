@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { updateSaleStatus, paySale } from "../data/saleApi";
 import { useNavigate } from "react-router-dom";
 
 export default function Pago() {
   const navigate = useNavigate();
   const saleId = localStorage.getItem("saleId");
-
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  const saleId = localStorage.getItem("saleId");
+  // Si no hay token O no hay venta activa, redirigir a comprar
+  if (!token || !saleId) {
+    navigate("/comprar");
+  }
+}, [navigate]);
 
   //  EFECTIVO / BIZUM SIMULADO
   const changeStatus = async (status: "PAID" | "CANCELLED") => {
@@ -68,13 +76,13 @@ export default function Pago() {
 
         <p className="mb-4">Elige una opción:</p>
 
-        {/* 💳 TARJETA (STRIPE) */}
+        {/* TARJETA (STRIPE) */}
         <button
           onClick={pagarConTarjeta}
           disabled={loading}
           className="w-full bg-blue-600 text-white py-2 rounded-xl mb-3"
         >
-          Pagar con tarjeta 💳
+          Pagar con tarjeta
         </button>
 
         {/* EFECTIVO */}
@@ -83,7 +91,7 @@ export default function Pago() {
           disabled={loading}
           className="w-full bg-green-600 text-white py-2 rounded-xl mb-3"
         >
-          Pagar en efectivo 💵
+          Pagar en efectivo 
         </button>
 
         {/*  BIZUM SIMULADO */}
@@ -101,7 +109,7 @@ export default function Pago() {
           disabled={loading}
           className="w-full bg-red-600 text-white py-2 rounded-xl"
         >
-          Cancelar ❌
+          Cancelar 
         </button>
 
       </div>

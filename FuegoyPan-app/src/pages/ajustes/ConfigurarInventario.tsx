@@ -65,7 +65,7 @@ export default function ConfigurarInventario() {
     <div className="bg-[#F2E9DB] min-h-screen flex flex-col items-center py-10">
       <img src="../src/assets/logo.png" alt="logo" className="w-75 h-45 rounded-full" />
       <h1 className="text-2xl text-white font-bold mb-4">
-        ¿Qué ingredientes deseas reponer?
+        ¿Qué ingredientes deseas modificar el inventario?
       </h1>
       <div className="relative mt-4 w-64">
         <input
@@ -85,7 +85,7 @@ export default function ConfigurarInventario() {
                 src={ingredient.image}
                 alt={ingredient.ingredientName}
                 className="rounded-lg h-16 w-16 object-cover"/>
-              <h3 className="font-semibold text-base text-gray-800 flex-1">
+              <h3 className="font-semibold text-center text-gray-800 flex-1">
                 {ingredient.ingredientName}
               </h3>
               <div className="flex items-center gap-3">
@@ -96,7 +96,7 @@ export default function ConfigurarInventario() {
                 >
                   -
                 </button>
-                <div className="text-center min-w-[50px]">
+                <div className="text-center min-w-12.5">
                   <p className="text-lg font-bold text-red-600">
                     {porcentaje[ingredient.ingredientId] ?? 0}
                   </p>
@@ -107,7 +107,7 @@ export default function ConfigurarInventario() {
                 <button
                   type="button"
                   onClick={() => aumentarPorcentaje(ingredient.ingredientId)}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all active:scale-90"
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all active:scale-90"
                 >
                   +
                 </button>

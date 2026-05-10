@@ -6,16 +6,17 @@ export interface CartItem extends IProducto {
 }
 
 interface CartContextType {
-  cart: CartItem[];
+  cart: CartItem[];// Lista actual de productos en carrito
   setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
-  addToCart: (product: IProducto) => void;
-  removeFromCart: (id: number) => void;
-  clearCart: () => void;
+  addToCart: (product: IProducto) => void;// Añade producto o incrementa cantidad si existe
+  removeFromCart: (id: number) => void; // Elimina producto por ID
+  clearCart: () => void; // Vacía completamente el carrito
 }
 
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  // Estado inicial desde localStorage para persistencia entre recargas
   const [cart, setCart] = useState<CartItem[]>(() => {
     const stored = localStorage.getItem("cart");
     return stored ? JSON.parse(stored) : [];

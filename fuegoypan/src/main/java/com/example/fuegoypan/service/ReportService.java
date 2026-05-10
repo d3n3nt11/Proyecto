@@ -12,4 +12,5 @@ public interface ReportService {
     List<SaleDTO> getSalesReport(String start, String end);
     List<StockMovementDTO> getIngredientConsumptionReport(String start, String end);
     List<StockMovementDTO> getStockMovementsReport(String start, String end);
+    byte[] generateIngredientConsumptionCsv(String start, String end);
 }

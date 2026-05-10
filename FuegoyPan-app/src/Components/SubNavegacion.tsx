@@ -1,15 +1,16 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 
 export default function SubNavegacion() {
-    const navigate = useNavigate()
-    const location = useLocation()
-
+    const navigate = useNavigate() // Función para cambiar de ruta programáticamente
+    const location = useLocation() // Objeto con información de la ruta actual
+    
+    // Obtenemos el rol desde almacenamiento
     const userRole = localStorage.getItem("userRole");
     const verAjustes = userRole === "GERENTE" || userRole === "ADMIN";
 
     // Home activo en páginas de comida
     const rutasHome = ['/burger', '/bebidas', '/postre', '/salsas']
-
+    // "Ajustes" solo si el rol lo permite
     const botones = [
         { id: 'home', texto: 'Home', ruta: '/burger' }, 
         ...(verAjustes ? [{ id: 'ajustes', texto: 'Ajustes', ruta: '/ajustes' }] : []),

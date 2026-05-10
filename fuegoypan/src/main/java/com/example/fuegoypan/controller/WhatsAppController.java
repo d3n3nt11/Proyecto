@@ -17,96 +17,81 @@ public class WhatsAppController {
         this.stockService = stockService;
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/xml")
     public String receiveMessage(@RequestParam("Body") String body) {
 
-        String message = body.toLowerCase();
+        String message = body.toLowerCase().trim();
+
+        String response;
 
         if (message.contains("estado") || message.contains("todo")) {
-            return buildFullStatus();
+            response = buildFullStatusSimplified();
+        } else if (message.contains("stock")) {
+            response = buildStockResponse();
+        } else if (message.contains("caduca") || message.contains("caducidad")) {
+            response = buildExpiredResponse();
+        } else if (message.contains("ayuda")) {
+            response = "Comandos:\n- estado\n- stock\n- caducidad";
+        } else {
+            response = "No entiendo el comando.\nEscribe 'ayuda'";
         }
 
-        if (message.contains("stock")) {
-            return buildStockResponse();
-        }
-
-        if (message.contains("caduca") || message.contains("caducidad")) {
-            return buildExpiredResponse();
-        }
-
-        if (message.contains("ayuda")) {
-            return "Comandos:\n- stock\n- caducidad\n- estado";
-        }
-
-        return "No entiendo el comando.\nEscribe 'ayuda'";
+        return wrap(response);
     }
 
-    //  VER TODO
-    private String buildFullStatus() {
+    //  Envolver respuesta para Twilio
+    private String wrap(String message) {
+        return """
+                <Response>
+                    <Message><![CDATA[%s]]></Message>
+                </Response>
+                """.formatted(message);
+    }
+
+    // ESTADO SIMPLIFICADO: solo "nombre: actual/min"
+    private String buildFullStatusSimplified() {
         List<StockIngredientDTO> all = stockService.getAllStock();
+        StringBuilder sb = new StringBuilder("ESTADO GENERAL\n\n");
 
-        StringBuilder response = new StringBuilder("📊 ESTADO GENERAL:\n");
-
-        LocalDate today = LocalDate.now();
-
-        all.forEach(s -> {
-            boolean lowStock = s.getCurrentStock() < s.getMinStock();
-            boolean expired = s.getExpirationDate() != null && !s.getExpirationDate().isAfter(today);
-
-            response.append("- ")
-                    .append(s.getIngredientName())
-                    .append(" | En stock: ")
+        for (var s : all) {
+            sb.append(s.getIngredientName())
+                    .append(": ")
                     .append(s.getCurrentStock())
-                    .append(" | Minimo:")
-                    .append(s.getMinStock());
+                    .append("/")
+                    .append(s.getMinStock())
+                    .append("\n");
+        }
 
-            if (lowStock) {
-                response.append(" ⚠️ BAJO");
-            }
-
-            if (expired) {
-                response.append(" ❌ CADUCADO");
-            }
-
-            response.append("\n");
-        });
-
-        return response.toString();
+        return sb.toString();
     }
 
-    //  STOCK BAJO
+    // 📦 STOCK BAJO
     private String buildStockResponse() {
         List<StockIngredientDTO> all = stockService.getAllStock();
-
-        StringBuilder response = new StringBuilder("📦 STOCK BAJO:\n");
+        StringBuilder sb = new StringBuilder("STOCK BAJO\n\n");
 
         boolean hasLow = false;
-
         for (var s : all) {
             if (s.getCurrentStock() < s.getMinStock()) {
                 hasLow = true;
-                response.append("- ")
-                        .append(s.getIngredientName())
-                        .append(" (")
+                sb.append(s.getIngredientName())
+                        .append(": ")
                         .append(s.getCurrentStock())
                         .append("/")
                         .append(s.getMinStock())
-                        .append(")\n");
+                        .append("\n");
             }
         }
 
-        if (!hasLow) {
-            response.append("✅ No hay stock bajo");
-        }
+        if (!hasLow) sb.append("Todo correcto");
 
-        return response.toString();
+        return sb.toString();
     }
 
-    //  CADUCADOS
+    // ⏰ CADUCADOS
     private String buildExpiredResponse() {
         List<StockIngredientDTO> all = stockService.getAllStock();
-
-        StringBuilder response = new StringBuilder("⏰ CADUCADOS:\n");
+        StringBuilder sb = new StringBuilder("CADUCADOS\n\n");
 
         boolean hasExpired = false;
         LocalDate today = LocalDate.now();
@@ -114,18 +99,15 @@ public class WhatsAppController {
         for (var s : all) {
             if (s.getExpirationDate() != null && !s.getExpirationDate().isAfter(today)) {
                 hasExpired = true;
-                response.append("- ")
-                        .append(s.getIngredientName())
-                        .append(" (")
+                sb.append(s.getIngredientName())
+                        .append(": ")
                         .append(s.getExpirationDate())
-                        .append(")\n");
+                        .append("\n");
             }
         }
 
-        if (!hasExpired) {
-            response.append("✅ No hay ingredientes caducados");
-        }
+        if (!hasExpired) sb.append("No hay ingredientes caducados");
 
-        return response.toString();
+        return sb.toString();
     }
 }

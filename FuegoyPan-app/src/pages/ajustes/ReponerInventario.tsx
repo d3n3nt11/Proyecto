@@ -1,23 +1,22 @@
-// ReponerInventario.tsx
-
 import { useEffect, useState } from "react";
 import type { IIngredient } from "../../types/Interfaces";
+
 import { getIngredientes, reponerInventarioBatch } from "../../data/api";
+
 import SubNavegacion from "../../Components/SubNavegacion";
 
 export default function ReponerInventario() {
+
     const [ingredients, setIngredients] = useState<IIngredient[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [filteredIngredients, setFilteredIngredients] = useState<IIngredient[]>([]);
     
-    // 🔹 Estado para cantidades a reponer por ingrediente
+   
     const [stockLocal, setStockLocal] = useState<{ [key: number]: number }>({});
     
-    // 🔹 Estado para fechas de caducidad por ingrediente (formato YYYY-MM-DD)
     const [expirationDates, setExpirationDates] = useState<{ [key: number]: string }>({});
     
-    // 🔹 Estado para mostrar/ocultar formulario de lote
     const [expandedIngredient, setExpandedIngredient] = useState<number | null>(null);
 
     useEffect(() => {
@@ -25,7 +24,6 @@ export default function ReponerInventario() {
             try {
                 const data = await getIngredientes();
                 setIngredients(data);
-
                 const stockInicial: { [key: number]: number } = {};
                 const expirationInicial: { [key: number]: string } = {};
                 
@@ -51,14 +49,15 @@ export default function ReponerInventario() {
         if (search.trim() === "") {
             setFilteredIngredients(ingredients);
         } else {
-            const filtrados = ingredients.filter((i) =>
-                i.ingredientName.toLowerCase().includes(search.toLowerCase())
+            setFilteredIngredients(
+                ingredients.filter((i) =>
+                    i.ingredientName.toLowerCase().includes(search.toLowerCase())
+                )
             );
-            setFilteredIngredients(filtrados);
         }
     }, [search, ingredients]);
 
-    // 🔹 Manejar cambio en cantidad de stock
+  
     const handleStockChange = (id: number, value: number) => {
         if (value < 0) return;
         setStockLocal((prev) => ({
@@ -67,7 +66,7 @@ export default function ReponerInventario() {
         }));
     };
 
-    // 🔹 Manejar cambio en fecha de caducidad
+  
     const handleExpirationChange = (id: number, date: string) => {
         setExpirationDates((prev) => ({
             ...prev,
@@ -75,7 +74,6 @@ export default function ReponerInventario() {
         }));
     };
 
-    // 🔹 NUEVA: Generar número de lote automático (formato: LOTE-YYYYMMDD-XXXX)
     const generateBatchNumber = (): string => {
         const now = new Date();
         const datePart = now.toISOString().split("T")[0].replace(/-/g, ""); // YYYYMMDD
@@ -83,19 +81,19 @@ export default function ReponerInventario() {
         return `LOTE-${datePart}-${randomPart}`;
     };
 
-    // 🔹 MODIFICADA: Repone stock creando un NUEVO LOTE con fecha de caducidad
+   
     const reponerConLote = async (ingredientId: number) => {
         const quantity = stockLocal[ingredientId] || 0;
         const expirationDate = expirationDates[ingredientId];
 
         // Validaciones
         if (quantity <= 0) {
-            alert("⚠️ La cantidad a reponer debe ser mayor a 0");
+            alert(" La cantidad a reponer debe ser mayor a 0");
             return;
         }
 
         if (!expirationDate) {
-            alert("⚠️ Debes seleccionar una fecha de caducidad para el lote");
+            alert(" Debes seleccionar una fecha de caducidad para el lote");
             return;
         }
 
@@ -103,17 +101,17 @@ export default function ReponerInventario() {
         const today = new Date();
         const selectedDate = new Date(expirationDate);
         if (selectedDate < today) {
-            alert("⚠️ La fecha de caducidad no puede ser anterior a hoy");
+            alert("La fecha de caducidad no puede ser anterior a hoy");
             return;
         }
 
         try {
             setLoading(true);
             
-            // 🔹 Generar número de lote automático
+          
             const batchNumber = generateBatchNumber();
             
-            // 🔹 LLAMADA A API CON DATOS DE LOTE
+           
             await reponerInventarioBatch({
                 ingredientId,
                 quantity,
@@ -139,19 +137,19 @@ export default function ReponerInventario() {
             
         } catch (error) {
             console.error("Error al crear lote:", error);
-            alert("❌ Error al reponer inventario. Intenta de nuevo.");
+            alert(" Error al reponer inventario. Intenta de nuevo.");
         } finally {
             setLoading(false);
         }
     };
 
-    // 🔹 AUXILIAR: Obtener unidad del ingrediente
+
     const getUnit = (id: number): string => {
         const ing = ingredients.find(i => i.ingredientId === id);
         return ing?.unit || "und";
     };
 
-    // 🔹 AUXILIAR: Formatear fecha para mostrar
+    
     const formatDate = (dateString: string): string => {
         if (!dateString) return "-";
         const date = new Date(dateString);
@@ -162,7 +160,6 @@ export default function ReponerInventario() {
         });
     };
 
-    // 🔹 AUXILIAR: Calcular días restantes para caducidad
     const getDaysUntilExpiration = (dateString: string): number | null => {
         if (!dateString) return null;
         const today = new Date();
@@ -174,7 +171,6 @@ export default function ReponerInventario() {
         return diffDays;
     };
 
-    // 🔹 AUXILIAR: Color de badge según caducidad
     const getExpirationBadgeColor = (dateString: string): string => {
         const days = getDaysUntilExpiration(dateString);
         if (days === null) return "bg-gray-100 text-gray-600";
@@ -210,6 +206,7 @@ export default function ReponerInventario() {
 
             {loading && <p className="text-gray-600 mt-6">⏳ Cargando inventario...</p>}
 
+            {/* LISTA DE INGREDIENTES */}
             {!loading && (
                 <div className="w-full max-w-2xl space-y-4 mt-4">
                     {filteredIngredients.map((ingredient) => {

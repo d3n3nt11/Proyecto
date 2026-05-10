@@ -88,7 +88,7 @@ public class ReportServiceImpl implements ReportService {
             dto.setTotal(s.getTotal());
             dto.setStatus(s.getStatus());
             dto.setUserId(s.getUser() != null ? s.getUser().getId() : null);
-            dto.setUserName(s.getUser() != null ? s.getUser().getName() : "Desconocido"); // 👈 NUEVO
+            dto.setUserName(s.getUser() != null ? s.getUser().getName() : "Desconocido");
             return dto;
         }).toList();
     }
@@ -105,7 +105,7 @@ public class ReportServiceImpl implements ReportService {
         return movements.stream().map(m -> {
             StockMovementDTO dto = new StockMovementDTO();
             dto.setIngredientId(m.getIngredient() != null ? m.getIngredient().getId() : null);
-            dto.setIngredientName(m.getIngredient() != null ? m.getIngredient().getName() : "N/A"); // 👈 NUEVO
+            dto.setIngredientName(m.getIngredient() != null ? m.getIngredient().getName() : "N/A");
             dto.setQuantity(m.getQuantity());
             dto.setType(m.getType());
             dto.setSaleId(m.getSale() != null ? m.getSale().getId() : null);
@@ -136,5 +136,30 @@ public class ReportServiceImpl implements ReportService {
             return dto;
         }).toList();
 
+    }
+
+    @Override
+    public byte[] generateIngredientConsumptionCsv(String start, String end) {
+
+        LocalDateTime startDate = LocalDate.parse(start).atStartOfDay();
+        LocalDateTime endDate = LocalDate.parse(end).atTime(23, 59, 59);
+
+        List<Object[]> results =
+                stockMovementRepo.getIngredientConsumption(startDate, endDate);
+
+        StringBuilder csv = new StringBuilder();
+
+        String BOM = "\uFEFF";
+
+        csv.append(BOM);
+        csv.append("Ingrediente;Cantidad Consumida\n");
+
+        for (Object[] row : results) {
+
+            csv.append(row[0]).append(";");
+            csv.append(row[1]).append("\n");
+        }
+
+        return csv.toString().getBytes(StandardCharsets.UTF_8);
     }
 }
